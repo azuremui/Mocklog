@@ -282,6 +282,32 @@ html.fs-on, html.fs-on body{overflow:hidden}
 .snip{font-size:13px;color:var(--ink);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #ocrMsg.busy{color:var(--omr);font-weight:700}
 
+/* 정답·모음집 */
+.ansrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
+.abtn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:20px;font-weight:700;padding:0;display:grid;place-items:center}
+.abtn.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.abtn.mine.on{background:var(--omr);border-color:var(--omr);color:#fff}
+.atype{display:inline-flex;background:var(--field);border-radius:10px;padding:3px;margin-left:auto}
+.atype button{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--sub);padding:6px 10px;border-radius:8px}
+.atype button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.flabel{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub);margin-top:6px}
+.flabel .req{color:var(--omr);font-weight:700}
+.need{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.anschip{display:inline-block;font-size:12px;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--field);color:var(--ink);margin-left:4px}
+.anschip.miss{background:var(--omr-weak);color:var(--omr)}
+.colcard{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.colcard.on{box-shadow:inset 0 0 0 2px var(--ink)}
+.colcard .cnt{font-size:22px;font-weight:800;min-width:40px;text-align:right}
+.colhead{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.colhead h2{margin:0;flex:1;min-width:0;font-size:20px}
+.pickrow{display:flex;gap:10px;align-items:center;width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;font:inherit;color:inherit;padding:10px 0;cursor:pointer}
+.pickrow .ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:var(--card);font-size:15px;font-weight:800}
+.pickrow.on .ck{background:var(--ink);border-color:var(--ink)}
+.pickbar{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:10px 0;background:var(--card);z-index:3}
+@media (min-width:700px) and (min-height:560px){ .pickbar{bottom:0} .nsplit{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:18px;align-items:start}
+  .nsplit .ncols{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px)} }
+
 /* 회차별 성적표 */
 .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
 .tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
@@ -386,6 +412,7 @@ html.fs-on, html.fs-on body{overflow:hidden}
     <nav aria-label="메뉴">
       <button data-act="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 15l4-4 3 3 5-6"/></svg><span>분석</span></button>
       <button data-act="tab" data-tab="exams"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8.5h6M9 12h6M9 15.5h3"/></svg><span>시험 기록</span></button>
+      <button data-act="tab" data-tab="notes"><svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8.5h6"/></svg><span>오답노트</span></button>
       <button data-act="tab" data-tab="timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 3h4M18 6.5l1.5-1.5"/></svg><span>타이머</span></button>
       <button data-act="tab" data-tab="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span>설정</span></button>
     </nav>
@@ -398,6 +425,7 @@ html.fs-on, html.fs-on body{overflow:hidden}
   <nav class="tabs">
     <button data-act="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 15l4-4 3 3 5-6"/></svg>분석</button>
     <button data-act="tab" data-tab="exams"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8.5h6M9 12h6M9 15.5h3"/></svg>시험 기록</button>
+    <button data-act="tab" data-tab="notes"><svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8.5h6"/></svg>오답노트</button>
     <button data-act="tab" data-tab="timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 3h4M18 6.5l1.5-1.5"/></svg>타이머</button>
     <button data-act="tab" data-tab="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>설정</button>
   </nav>
@@ -442,7 +470,7 @@ const mode = window.FIREBASE_CONFIG ? 'cloud' : 'local';
 const NOSLEEP_MP4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMzbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAl10cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHVbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABgG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUBzdGJsAAAAwHN0c2QAAAAAAAAAAQAAALBhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANmF2Y0MBZAAK/+EAGWdkAAqscgRewEQAAAMABAAAAwAIPEiWEYABAAZo6EOPLIv9+PgAAAAAEHBhc3AAAAABAAAAAQAAABRidHJ0AAAAAAAAC1AAAAtQAAAAGHN0dHMAAAAAAAAAAQAAAAIAAEAAAAAAFHN0c3MAAAAAAAAAAQAAAAEAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAIAAAABAAAAHHN0c3oAAAAAAAAAAAAAAAIAAALHAAAADQAAABRzdGNvAAAAAAAAAAEAAANjAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAAAIZnJlZQAAAtxtZGF0AAACrwYF//+r3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NCByMzEwOCAzMWUxOWY5IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTE2IGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMzMgbWU9dW1oIHN1Ym1lPTEwIHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MjQgY2hyb21hX21lPTEgdHJlbGxpcz0yIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS0yIHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTggYl9weXJhbWlkPTIgYl9hZGFwdD0yIGJfYmlhcz0wIGRpcmVjdD0zIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTYwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAABBliIEAAt/+99M/zLLsmiWBAAAACUGaCC2IK//+8A==';
 const fb = {};
 let user = null, data = null, charts = [];
-const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, wbQ:'', wbSubj:'', wbOnly:false, wbLimit:15, ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0]} };
+const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, colOpen:null, nq:'', nSubj:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(localStorage.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
 
 function defaultData(){
   const now = new Date();
@@ -454,11 +482,21 @@ function defaultData(){
       elective:{ko:'', ma:''}, names:{s1:'', s2:'', fl:''},
       goals:{ko:null, ma:null, en:null, hi:null, s1:null, s2:null, fl:null},
       series:[],
+      collections:[],
       layout:{phone:null, tablet:null},
     },
     exams: TEMPLATE.map(([m,name,type]) => ({id:newId(), name, type, month:m, date:'', scores:{}, wrongs:[], memo:{}})),
   };
 }
+const CIRC = ['①','②','③','④','⑤'];
+function normWrong(w){
+  const o = {...w, id:w.id || newId(), cols:Array.isArray(w.cols) ? w.cols : []};
+  if (!(o.ans && (o.ans.type === 'mc' || o.ans.type === 'short') && String(o.ans.v ?? '').trim())) delete o.ans;
+  if (o.mine == null) delete o.mine;
+  return o;
+}
+const ansText = a => !a ? '' : a.type === 'mc' ? (CIRC[Number(a.v) - 1] || a.v) : String(a.v);
+const mineText = w => w.mine == null || w.mine === '' ? '' : (w.ans?.type === 'short' ? String(w.mine) : (CIRC[Number(w.mine) - 1] || String(w.mine)));
 function normalize(d){
   const base = defaultData();
   if (!d || typeof d !== 'object') return base;
@@ -467,11 +505,12 @@ function normalize(d){
   s.elective = {...base.settings.elective, ...(s.elective || {})};
   s.names = {...base.settings.names, ...(s.names || {})};
   s.layout = {phone: normLayout(s.layout?.phone), tablet: normLayout(s.layout?.tablet)};
+  s.collections = Array.isArray(s.collections) ? s.collections.filter(c => c && c.id).map(c => ({id:c.id, name:c.name || '이름 없는 모음집', createdAt:c.createdAt || Date.now()})) : [];
   s.series = Array.isArray(s.series) ? s.series.map(x => ({id:x.id || newId(), name:x.name || '이름 없음', type:x.type === '하프' ? '하프' : '사설', subjs:Array.isArray(x.subjs) ? x.subjs : [], hidden:!!x.hidden, targets: x.targets && typeof x.targets === 'object' ? x.targets : {}})) : [];
   const exams = Array.isArray(d.exams) ? d.exams.map(e => {
     const o = {
       id:e.id || newId(), name:e.name || '시험', type:e.type || '사설', month:e.month ?? null, date:e.date || '',
-      scores:e.scores || {}, wrongs:Array.isArray(e.wrongs) ? e.wrongs : [], memo:e.memo || {},
+      scores:e.scores || {}, wrongs:Array.isArray(e.wrongs) ? e.wrongs.map(normWrong) : [], memo:e.memo || {},
     };
     if (OFFICIAL_TYPES.includes(o.type)) return o;
     o.subjs = Array.isArray(e.subjs) ? e.subjs : [...ALL_KEYS];
@@ -631,16 +670,15 @@ const CARD_INFO = {
   subjWrongs:['과목별 오답 수','과목마다 틀린 문항 수'],
   offTable:['공식 시험 성적표','회차별 등급과 백분위 표'],
   privTable:['사설·하프 기록 표','사설·하프 점수를 최근 순으로'],
-  wrongBook:['오답 노트','사진·텍스트를 붙인 오답을 검색하고 모아 봐요'],
 };
-const FIXED_CARDS = ['omr','dday','next','reasons','subjWrongs','wrongBook','offTable','privTable'];
+const FIXED_CARDS = ['omr','dday','next','reasons','subjWrongs','offTable','privTable'];
 const devKey = () => isWide() ? 'tablet' : 'phone';
 const newTrend = target => ({id:newId(), type:'trend', size:'n', hidden:false, cfg:{target, metric:'grade', subj:'ma'}});
 function defaultLayout(dev){
   const c = (type, size='n', hidden=false) => ({id:type, type, size, hidden});
   return dev === 'tablet'
-    ? [c('omr'), newTrend('official'), c('dday'), c('next'), newTrend('priv:all'), c('reasons'), c('subjWrongs'), c('wrongBook','w'), c('offTable','w'), c('privTable','w')]
-    : [c('omr'), c('dday'), c('next'), newTrend('official'), newTrend('priv:all'), c('reasons'), c('subjWrongs'), c('wrongBook','w'), c('offTable','w',true), c('privTable','w',true)];
+    ? [c('omr'), newTrend('official'), c('dday'), c('next'), newTrend('priv:all'), c('reasons'), c('subjWrongs'), c('offTable','w'), c('privTable','w')]
+    : [c('omr'), c('dday'), c('next'), newTrend('official'), newTrend('priv:all'), c('reasons'), c('subjWrongs'), c('offTable','w',true), c('privTable','w',true)];
 }
 function normLayout(arr){
   if (!Array.isArray(arr)) return null;
@@ -832,7 +870,6 @@ function homeCard(it){
     case 'subjWrongs': return subjWrongsCard();
     case 'offTable': return tableCard();
     case 'privTable': return privTableCard();
-    case 'wrongBook': return wrongBookCard();
   }
   return '';
 }
@@ -1002,16 +1039,20 @@ function renderDetail(e, wide){
   if (!wsubs.find(s => s.key === state.wr.subj)) state.wr.subj = wsubs[0].key;
   const wr = [...(e.wrongs || [])].sort((a,b) => wsubs.findIndex(s => s.key===a.subj) - wsubs.findIndex(s => s.key===b.subj) || (Number(a.no)||0) - (Number(b.no)||0));
   const nameOf = k => subjects().find(s => s.key === k)?.name || k;
+  const W = state.wr;
+  W.cols = W.cols.filter(id => data.settings.collections.some(c => c.id === id));
   h += `<div class="dgrid"><section class="card"><h2>틀린 문항</h2>
-    <div class="wform"><select id="wr-subj" aria-label="과목">${wsubs.map(s => `<option value="${s.key}" ${s.key===state.wr.subj?'selected':''}>${esc(s.name)}</option>`).join('')}</select>
-      <input id="wr-no" inputmode="numeric" enterkeyhint="done" placeholder="번호" aria-label="문항 번호"></div>
-    <div class="wform"><select id="wr-reason" aria-label="틀린 이유">${REASONS.map(r => `<option ${r===state.wr.reason?'selected':''}>${r}</option>`).join('')}</select>
-      <button class="btn sm" data-act="add-wrong" style="width:100%">추가</button></div>
-    <input id="wr-note" enterkeyhint="done" placeholder="메모 (선택): 무엇을 놓쳤는지" style="margin-bottom:8px">`;
+    <div class="wform"><select id="wr-subj" aria-label="과목">${wsubs.map(s => `<option value="${s.key}" ${s.key===W.subj?'selected':''}>${esc(s.name)}</option>`).join('')}</select>
+      <input id="wr-no" inputmode="numeric" enterkeyhint="done" placeholder="번호" aria-label="문항 번호" value="${esc(W.no)}"></div>
+    <select id="wr-reason" aria-label="틀린 이유" style="margin-bottom:2px">${REASONS.map(r => `<option ${r===W.reason?'selected':''}>${r}</option>`).join('')}</select>
+    ${ansBlock('form', W.ansType, W.ans, W.mine)}
+    ${colChips('form', W.cols)}
+    <input id="wr-note" enterkeyhint="done" placeholder="메모 (선택): 무엇을 놓쳤는지" value="${esc(W.note)}" style="margin:10px 0 8px">
+    <button class="btn" data-act="add-wrong" style="margin-bottom:6px">오답 추가</button>`;
   h += wr.length ? wr.map(w => { const n = notes.get(w.id), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
       const badge = [n?.imgs.length ? `사진 ${n.imgs.length}` : '', n?.text.trim() ? '텍스트' : ''].filter(Boolean).join(', ');
       return `<div class="wrong"><span class="no">${esc(w.no || '?')}번</span><button class="wopen" data-act="wn-open" data-id="${w.id}"><b>${esc(nameOf(w.subj))}</b> <span class="sub">${esc(w.reason)}</span>${w.note ? `<div class="sub">${esc(w.note)}</div>` : ''}
-        <div class="wbadge">${badge ? esc(badge) + ' ›' : '사진·문제 추가 ›'}</div></button>${img ? `<img class="thumb" data-img="${img.id}" alt="">` : ''}
+        <div class="wbadge">${w.ans ? `<span class="anschip" style="margin:0 6px 0 0">정답 ${esc(ansText(w.ans))}</span>` : `<span class="anschip miss" style="margin:0 6px 0 0">정답 미입력</span>`}${badge ? esc(badge) + ' ›' : '사진 추가 ›'}</div></button>${img ? `<img class="thumb" data-img="${img.id}" alt="">` : ''}
       <button class="x" data-act="del-wrong" data-id="${w.id}" aria-label="삭제">×</button></div>`; }).join('')
     : `<p class="sub" style="margin:4px 0 0">아직 기록한 문항이 없어요.</p>`;
   h += `</section>`;
@@ -1494,6 +1535,7 @@ function sheetHtml({e, w}){
         <button class="btn sm ghost" data-act="ocr-run" ${hasProb ? '' : 'disabled'}>사진에서 글자 읽기</button></div>
       <p class="hint" id="ocrMsg">${hasProb ? '문항 사진을 저장하면 글자를 자동으로 읽어요.' : '문항 사진을 저장하면 글자를 자동으로 읽어요.'} 사진 앱에서 글자를 길게 눌러 복사한 뒤 붙여 넣어도 돼요.</p>
       <textarea id="wnText" data-bind="wntext" rows="9" placeholder="문제 텍스트" style="min-height:180px">${esc(n.text)}</textarea></section>
+    <section class="card"><h2>정답과 모음집</h2>${ansBlock('sheet', w.ans?.type || w.ansType || 'mc', w.ans?.v ?? '', w.mine ?? '')}${colChips('sheet', w.cols || [])}</section>
     <section class="card"><h2>틀린 이유와 메모</h2>
       <div class="grid2" style="margin:0 0 8px"><select data-bind="wrong" data-k="reason" aria-label="틀린 이유">${REASONS.map(r => `<option ${r === w.reason ? 'selected' : ''}>${r}</option>`).join('')}</select>
         <input data-bind="wrong" data-k="no" value="${esc(w.no)}" inputmode="numeric" placeholder="문항 번호" aria-label="문항 번호"></div>
@@ -1645,30 +1687,92 @@ async function runOcr(wrongId, sources){
   } finally { ocrBusy = false; }
 }
 
-// ── 분석 화면 카드: 오답 노트 ──
+// ═════════════════════════ 오답노트 메뉴: 모음집 ═════════════════════════
 function allWrongs(){ const out = []; for (const e of sortedExams()) for (const w of e.wrongs || []) out.push({e, w}); return out.reverse(); }
-function wrongListHtml(){
-  const q = state.wbQ.trim().toLowerCase(), subs = subjects(), nm = k => subs.find(s => s.key === k)?.name || k;
-  let list = allWrongs().filter(({w}) => !state.wbSubj || w.subj === state.wbSubj);
-  if (state.wbOnly) list = list.filter(({w}) => hasNote(w.id));
-  if (q) list = list.filter(({e, w}) => [notes.get(w.id)?.text, w.note, w.reason, examName(e), `${w.no}번`, nm(w.subj)].join(' ').toLowerCase().includes(q));
-  if (!list.length) return `<p class="sub" style="margin:6px 0 0">${q ? '검색 결과가 없어요.' : '아직 오답이 없어요.'}</p>`;
-  const shown = list.slice(0, state.wbLimit);
-  return shown.map(({e, w}) => {
-    const n = notes.get(w.id), t = (n?.text || '').replace(/\s+/g, ' ').trim(), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
-    return `<button class="wbitem" data-act="wn-open" data-id="${w.id}">${img ? `<img class="thumb" data-img="${img.id}" alt="">` : `<span class="thumb ph">${esc(nm(w.subj))}</span>`}
-      <span class="grow"><span><b>${esc(nm(w.subj))} ${esc(w.no || '?')}번</b> <span class="tag plain">${esc(w.reason)}</span></span>
-      <span class="sub d">${esc(examName(e))}</span>${t ? `<span class="snip">${esc(t.slice(0, 100))}</span>` : (w.note ? `<span class="snip">${esc(w.note)}</span>` : '')}</span></button>`; }).join('')
-    + (list.length > shown.length ? `<button class="btn ghost" data-act="wb-more" style="margin-top:8px">더 보기 (${list.length - shown.length}개 더)</button>` : '');
+const colName = id => id === 'all' ? '전체 오답' : (data.settings.collections.find(c => c.id === id)?.name || '모음집');
+const inCol = (w, id) => id === 'all' || (w.cols || []).includes(id);
+const subjName = k => subjects().find(s => s.key === k)?.name || k;
+function colSummary(id){
+  const list = allWrongs().filter(({w}) => inCol(w, id)), by = {};
+  list.forEach(({w}) => { by[w.subj] = (by[w.subj] || 0) + 1; });
+  return {n:list.length, parts:Object.entries(by).sort((a,b) => b[1] - a[1]).map(([k, n]) => `${subjName(k)} ${n}`).join(', ')};
 }
-function wrongBookCard(){
-  const used = subjects().filter(s => data.exams.some(e => (e.wrongs || []).some(w => w.subj === s.key)));
-  if (state.wbSubj && !used.some(s => s.key === state.wbSubj)) state.wbSubj = '';
-  return `<section class="card"><h2>오답 노트</h2>
-    <input id="wb-q" type="search" enterkeyhint="search" placeholder="문제 텍스트, 메모, 시험 이름 검색" value="${esc(state.wbQ)}" autocomplete="off" style="margin-bottom:8px" aria-label="오답 검색">
-    ${used.length ? `<div class="chipsrow" aria-label="과목"><button class="fchip ${!state.wbSubj ? 'on' : ''}" data-act="wb-subj" data-s="">전체</button>${used.map(s => `<button class="fchip ${state.wbSubj === s.key ? 'on' : ''}" data-act="wb-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
-    <label class="sub" style="display:flex;gap:8px;align-items:center;margin:4px 0 4px"><input type="checkbox" id="wb-only" ${state.wbOnly ? 'checked' : ''} style="width:20px;height:20px;padding:0;-webkit-appearance:checkbox;appearance:auto">사진이나 텍스트가 있는 오답만</label>
-    <div id="wb-list">${wrongListHtml()}</div></section>`;
+function wrongItem(e, w, colId){
+  const n = notes.get(w.id), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
+  return `<div class="wbitem" style="cursor:default"><button class="wopen" data-act="wn-open" data-id="${w.id}" style="display:flex;gap:10px;align-items:flex-start">
+      ${img ? `<img class="thumb" data-img="${img.id}" alt="">` : `<span class="thumb ph">${esc(subjName(w.subj))}</span>`}
+      <span class="grow"><span><b>${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="tag plain">${esc(w.reason)}</span>${w.ans ? `<span class="anschip">정답 ${esc(ansText(w.ans))}</span>` : `<span class="anschip miss">정답 미입력</span>`}</span>
+      <span class="sub d">${esc(examName(e))}${e.date ? `, ${fmtDate(e.date)}` : ''}</span>${w.note ? `<span class="snip">${esc(w.note)}</span>` : ''}</span></button>
+    ${colId !== 'all' ? `<button class="btn sm ghost" data-act="col-out" data-id="${w.id}" style="flex:none">빼기</button>` : ''}</div>`;
+}
+function colListHtml(){
+  const id = state.colOpen || 'all', q = state.nq.trim().toLowerCase();
+  let list = allWrongs().filter(({w}) => inCol(w, id) && (!state.nSubj || w.subj === state.nSubj));
+  if (q) list = list.filter(({e, w}) => [w.note, w.reason, examName(e), `${w.no}번`, subjName(w.subj), ansText(w.ans)].join(' ').toLowerCase().includes(q));
+  if (!list.length) return `<p class="sub" style="margin:8px 0 0">${q || state.nSubj ? '조건에 맞는 문항이 없어요.' : id === 'all' ? '아직 등록한 오답이 없어요. 시험 기록에서 틀린 문항을 추가해 보세요.' : '아직 담긴 문항이 없어요. "문항 담기"로 넣어 보세요.'}</p>`;
+  return list.map(({e, w}) => wrongItem(e, w, id)).join('');
+}
+function colsPanel(wide){
+  const cols = data.settings.collections, cur2 = state.colOpen || 'all';
+  const card = (id, name) => { const sm = colSummary(id);
+    return `<section class="card"><button class="colcard ${wide && cur2 === id ? 'on' : ''}" data-act="col-open" data-id="${id}" style="background:none;padding:0">
+      <div class="grow"><b style="font-size:17px">${esc(name)}</b><div class="sub">${esc(sm.parts || '비어 있음')}</div></div><span class="cnt">${sm.n}</span>${wide ? '' : '<span class="chev">›</span>'}</button></section>`; };
+  return card('all', '전체 오답') + cols.map(c => card(c.id, c.name)).join('')
+    + `<button class="btn ghost" data-act="col-new" style="margin-top:4px">새 모음집 만들기</button>`;
+}
+function colView(wide){
+  const id = state.colOpen || 'all', all = id === 'all';
+  if (state.pick) return pickView();
+  const used = subjects().filter(s => allWrongs().some(({w}) => inCol(w, id) && w.subj === s.key));
+  if (state.nSubj && !used.some(s => s.key === state.nSubj)) state.nSubj = '';
+  return `${wide ? '' : `<button class="back" data-act="col-back">‹ 모음집 목록</button>`}
+    <section class="card"><div class="colhead"><h2>${esc(colName(id))}</h2>
+      ${all ? '' : `<button class="btn sm" data-act="col-pick">문항 담기</button><button class="btn sm ghost" data-act="col-rename">이름 바꾸기</button><button class="btn sm danger" data-act="col-del">삭제</button>`}</div>
+      <input id="n-q" type="search" enterkeyhint="search" placeholder="메모, 시험 이름, 번호, 정답 검색" value="${esc(state.nq)}" autocomplete="off" aria-label="검색" style="margin-bottom:8px">
+      ${used.length > 1 ? `<div class="chipsrow"><button class="fchip ${!state.nSubj ? 'on' : ''}" data-act="n-subj" data-s="">전체</button>${used.map(s => `<button class="fchip ${state.nSubj === s.key ? 'on' : ''}" data-act="n-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
+      <div id="n-list">${colListHtml()}</div></section>`;
+}
+function pickView(){
+  const id = state.colOpen, sel = state.pick;
+  const cand = allWrongs().filter(({w}) => !inCol(w, id) && (!state.pickSubj || w.subj === state.pickSubj));
+  const used = subjects().filter(s => allWrongs().some(({w}) => !inCol(w, id) && w.subj === s.key));
+  return `<section class="card"><div class="colhead"><h2>"${esc(colName(id))}"에 담을 문항</h2></div>
+    ${used.length > 1 ? `<div class="chipsrow"><button class="fchip ${!state.pickSubj ? 'on' : ''}" data-act="pick-subj" data-s="">전체</button>${used.map(s => `<button class="fchip ${state.pickSubj === s.key ? 'on' : ''}" data-act="pick-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
+    ${cand.length ? cand.map(({e, w}) => { const on = sel.has(w.id);
+      return `<button class="pickrow ${on ? 'on' : ''}" data-act="pick-tog" data-id="${w.id}" aria-pressed="${on}"><span class="ck">${on ? '✓' : ''}</span>
+        <span class="grow"><b>${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="sub">${esc(w.reason)}</span><div class="sub">${esc(examName(e))}</div></span></button>`; }).join('')
+      : `<p class="sub">담을 수 있는 문항이 없어요.</p>`}
+    <div class="pickbar"><button class="btn ghost" data-act="pick-cancel">취소</button><button class="btn" data-act="pick-done" ${sel.size ? '' : 'disabled'}>${sel.size}개 담기</button></div></section>`;
+}
+function renderNotes(){
+  const wide = isWide();
+  if (state.colOpen && state.colOpen !== 'all' && !data.settings.collections.some(c => c.id === state.colOpen)) state.colOpen = null;
+  if (wide) return `<div class="nsplit"><div class="ncols">${colsPanel(true)}</div><div>${colView(true)}</div></div>`;
+  return state.colOpen ? colView(false) : colsPanel(false);
+}
+
+// ── 정답·모음집 입력 (등록 칸과 편집 화면에서 같이 씀) ──
+function ansBlock(scope, type, v, mine){
+  const mc = type !== 'short';
+  return `<div class="flabel"><span>정답 <span class="req">필수</span></span>
+      <span class="atype"><button class="${mc ? 'on' : ''}" data-act="ans-type" data-scope="${scope}" data-t="mc">객관식</button><button class="${mc ? '' : 'on'}" data-act="ans-type" data-scope="${scope}" data-t="short">단답형</button></span></div>
+    ${mc ? `<div class="ansrow" id="${scope}-ans" role="radiogroup" aria-label="정답">${CIRC.map((c, i) => `<button class="abtn ${String(v) === String(i+1) ? 'on' : ''}" role="radio" aria-checked="${String(v) === String(i+1)}" data-act="ans-pick" data-scope="${scope}" data-v="${i+1}" aria-label="${c}">${i+1}</button>`).join('')}</div>`
+         : `<input id="${scope === 'form' ? 'wr-ans-s' : 'sh-ans-s'}" ${scope === 'sheet' ? 'data-bind="wans" data-k="v"' : ''} value="${esc(v)}" placeholder="정답 (예: 24)" autocomplete="off" style="margin:4px 0 8px" aria-label="정답">`}
+    <div class="flabel"><span>내가 고른 답 (선택)</span></div>
+    ${mc ? `<div class="ansrow" role="radiogroup" aria-label="내가 고른 답">${CIRC.map((c, i) => `<button class="abtn mine ${String(mine) === String(i+1) ? 'on' : ''}" role="radio" aria-checked="${String(mine) === String(i+1)}" data-act="mine-pick" data-scope="${scope}" data-v="${i+1}" aria-label="${c}">${i+1}</button>`).join('')}</div>`
+         : `<input id="${scope === 'form' ? 'wr-mine-s' : 'sh-mine-s'}" ${scope === 'sheet' ? 'data-bind="wans" data-k="mine"' : ''} value="${esc(mine)}" placeholder="내가 쓴 답" autocomplete="off" style="margin:4px 0 8px" aria-label="내가 고른 답">`}`;
+}
+function colChips(scope, sel){
+  const cols = data.settings.collections;
+  return `<div class="flabel"><span>모음집 (여러 개 가능)</span></div><div class="chipsrow wrap" style="margin-top:4px">${cols.map(c => { const on = sel.includes(c.id);
+      return `<button class="fchip ${on ? 'on' : ''}" aria-pressed="${on}" data-act="col-tog" data-scope="${scope}" data-id="${c.id}">${esc(c.name)}</button>`; }).join('')}
+    <button class="fchip" data-act="col-new-inline" data-scope="${scope}">＋ 새 모음집</button></div>`;
+}
+function newCollection(){
+  const name = prompt('새 모음집 이름을 입력하세요. (예: 통과 생태계)');
+  if (!name || !name.trim()) return null;
+  const c = {id:newId(), name:name.trim(), createdAt:Date.now()};
+  data.settings.collections.push(c); touch(); return c;
 }
 
 // ═════════════════════════ 그리기 ═════════════════════════
@@ -1679,6 +1783,7 @@ function render(){
   let title;
   if (state.tab === 'home'){ title = '분석'; v.innerHTML = renderHome(); }
   else if (state.tab === 'timer'){ title = '타이머'; v.innerHTML = renderTimer(); }
+  else if (state.tab === 'notes'){ title = '오답노트'; v.innerHTML = renderNotes(); }
   else if (state.tab === 'exams'){
     title = '시험 기록';
     if (wide) v.innerHTML = renderSplit();
@@ -1705,13 +1810,23 @@ function go(patch){ if ('examId' in patch && !('newSer' in patch)) state.newSer 
 // ═════════════════════════ 입력 처리 ═════════════════════════
 document.addEventListener('input', ev => {
   const el = ev.target;
-  if (el.id === 'wb-q'){ state.wbQ = el.value; state.wbLimit = 15; const L = $('#wb-list'); if (L){ L.innerHTML = wrongListHtml(); hydrateImgs(L); } return; }
+  if (el.id === 'n-q'){ state.nq = el.value; const L = $('#n-list'); if (L){ L.innerHTML = colListHtml(); hydrateImgs(L); } return; }
+  if (el.id === 'wr-no'){ state.wr.no = el.value; return; }
+  if (el.id === 'wr-note'){ state.wr.note = el.value; return; }
+  if (el.id === 'wr-ans-s'){ state.wr.ans = el.value.trim(); return; }
+  if (el.id === 'wr-mine-s'){ state.wr.mine = el.value.trim(); return; }
   const b = el.dataset.bind; if (!b) return;
   if (b === 'wntext'){
     const id = state.wn?.wrongId; if (!id) return; const n = noteOf(id); n.text = el.value;
     clearTimeout(noteTimer); noteTimer = setTimeout(() => { noteTimer = null; store.setNote(id, n); }, 700); return;
   }
   if (b === 'wrong'){ const f = findWrong(state.wn?.wrongId); if (f){ f.w[el.dataset.k] = el.value; touch(); } return; }
+  if (b === 'wans'){
+    const f = findWrong(state.wn?.wrongId); if (!f) return; const v = el.value.trim();
+    if (el.dataset.k === 'v'){ if (v) f.w.ans = {type:'short', v}; else delete f.w.ans; }
+    else { if (v) f.w.mine = v; else delete f.w.mine; }
+    touch(); return;
+  }
   const k = el.dataset.k;
   if (b === 'meta'){
     const e = cur(); e[k] = k === 'round' ? num(el.value) : el.value;
@@ -1768,7 +1883,6 @@ document.addEventListener('change', ev => {
   else if (el.id === 'importFile' && el.files[0]) importJson(el.files[0]);
   else if (el.id === 'auFile' && el.files[0]) saveAudio(el.files[0]);
   else if (el.id === 'shotFile' && el.files[0]) startCrop(el.files[0]);
-  else if (el.id === 'wb-only'){ state.wbOnly = el.checked; state.wbLimit = 15; const L = $('#wb-list'); if (L){ L.innerHTML = wrongListHtml(); hydrateImgs(L); } }
 });
 document.addEventListener('keydown', ev => {
   if (ev.key === 'Enter' && ev.target.dataset?.bind === 'score'){
@@ -1837,8 +1951,8 @@ const ACT = {
   },
   'lap-wrong': t => {
     const e = cur(); const k = t.dataset.s, l = lapsOf(e, k)[Number(t.dataset.i)]; if (!l) return;
-    (e.wrongs ??= []).push({id:newId(), subj:k, no:String(l.no), reason:'시간 부족', note:`풀이 ${clock(l.ms, true)}`});
-    touch(); render(); toast(`${l.no}번을 오답에 추가했어요. 틀린 이유는 \u2018시간 부족\u2019으로 넣었어요.`);
+    Object.assign(state.wr, {subj:k, no:String(l.no), reason:'시간 부족', note:`풀이 ${clock(l.ms, true)}`, ans:'', mine:''});
+    render(); const f = $('#wr-no'); f?.scrollIntoView({block:'center'}); toast('정답을 고르고 "오답 추가"를 눌러 주세요.');
   },
   'fs-sw': () => { const e = data.exams.find(x => x.id === state.fs.examId); if (e){ swToggle(e, state.fs.subj); renderFs(); } },
   'fs-tg': t => {
@@ -1874,7 +1988,7 @@ const ACT = {
     if (sec == null && e.scores[k].laps?.length && confirm('문항별 기록도 함께 지울까요?')) e.scores[k].laps = [];
     touch(); syncWake(); render();
   },
-  tab: t => go({tab:t.dataset.tab, examId:null, editHome:false}),
+  tab: t => { if (t.dataset.tab === 'notes' && state.tab === 'notes'){ state.colOpen = null; state.pick = null; } go({tab:t.dataset.tab, examId:null, editHome:false}); },
   'home-edit': () => go({editHome:true}),
   'home-done': () => go({editHome:false}),
   'lay-move': t => {
@@ -1942,20 +2056,76 @@ const ACT = {
     data.exams = data.exams.filter(x => x.id !== e.id); touch(); go({examId:null});
   },
   'add-wrong': () => {
-    const e = cur(); if (!e) return;
-    const no = $('#wr-no').value.trim(), note = $('#wr-note').value.trim();
-    if (!no && !note){ $('#wr-no').focus(); return; }
-    state.wr.subj = $('#wr-subj').value; state.wr.reason = $('#wr-reason').value;
-    (e.wrongs ??= []).push({id:newId(), subj:state.wr.subj, no, reason:state.wr.reason, note});
-    touch(); render(); $('#wr-no')?.focus();
+    const e = cur(); if (!e) return; const W = state.wr;
+    W.subj = $('#wr-subj').value; W.reason = $('#wr-reason').value;
+    W.no = $('#wr-no').value.trim(); W.note = $('#wr-note').value.trim();
+    if (W.ansType === 'short') W.ans = ($('#wr-ans-s')?.value || '').trim(), W.mine = ($('#wr-mine-s')?.value || '').trim();
+    if (!W.no){ toast('문항 번호를 입력해 주세요.'); $('#wr-no').focus(); return; }
+    if (!String(W.ans).trim()){
+      toast('정답을 입력해야 등록할 수 있어요.');
+      const box = $('#form-ans') || $('#wr-ans-s'); box?.classList.remove('need'); void box?.offsetWidth; box?.classList.add('need'); box?.focus?.(); return;
+    }
+    const w = {id:newId(), subj:W.subj, no:W.no, reason:W.reason, note:W.note, ans:{type:W.ansType, v:String(W.ans)}, cols:[...W.cols]};
+    if (String(W.mine).trim()) w.mine = String(W.mine);
+    (e.wrongs ??= []).push(w);
+    try { localStorage.setItem('mocklog-lastcols', JSON.stringify(W.cols)); } catch {}
+    Object.assign(W, {no:'', note:'', ans:'', mine:''});
+    touch(); render(); toast(`${subjName(w.subj)} ${w.no}번을 오답에 추가했어요.`); $('#wr-no')?.focus();
   },
+  'ans-type': t => {
+    if (t.dataset.scope === 'form'){ Object.assign(state.wr, {ansType:t.dataset.t, ans:'', mine:''}); render(); $('#wr-ans-s')?.focus(); }
+    else { const f = findWrong(state.wn?.wrongId); if (!f) return; const cur3 = f.w.ans?.type || 'mc'; if (cur3 === t.dataset.t) return;
+      delete f.w.ans; delete f.w.mine; f.w.ansType = t.dataset.t; touch(); renderSheet(); }
+  },
+  'ans-pick': t => {
+    if (t.dataset.scope === 'form'){ state.wr.ans = t.dataset.v; render(); }
+    else { const f = findWrong(state.wn?.wrongId); if (!f) return; f.w.ans = {type:'mc', v:t.dataset.v}; delete f.w.ansType; touch(); renderSheet(); }
+  },
+  'mine-pick': t => {
+    if (t.dataset.scope === 'form'){ state.wr.mine = state.wr.mine === t.dataset.v ? '' : t.dataset.v; render(); }
+    else { const f = findWrong(state.wn?.wrongId); if (!f) return; if (f.w.mine === t.dataset.v) delete f.w.mine; else f.w.mine = t.dataset.v; touch(); renderSheet(); }
+  },
+  'col-tog': t => {
+    const id = t.dataset.id;
+    if (t.dataset.scope === 'form'){ const c = state.wr.cols; state.wr.cols = c.includes(id) ? c.filter(x => x !== id) : [...c, id]; render(); }
+    else { const f = findWrong(state.wn?.wrongId); if (!f) return; const c = f.w.cols ||= []; f.w.cols = c.includes(id) ? c.filter(x => x !== id) : [...c, id]; touch(); renderSheet(); }
+  },
+  'col-new-inline': t => {
+    const c = newCollection(); if (!c) return;
+    if (t.dataset.scope === 'form'){ state.wr.cols = [...state.wr.cols, c.id]; render(); }
+    else { const f = findWrong(state.wn?.wrongId); if (f){ f.w.cols = [...(f.w.cols || []), c.id]; touch(); } renderSheet(); }
+  },
+  'col-new': () => { const c = newCollection(); if (c){ state.colOpen = c.id; state.nq = ''; state.nSubj = ''; render(); } },
+  'col-open': t => { state.colOpen = t.dataset.id; state.nq = ''; state.nSubj = ''; state.pick = null; render(); window.scrollTo(0, 0); },
+  'col-back': () => { state.colOpen = null; state.pick = null; render(); window.scrollTo(0, 0); },
+  'col-rename': () => {
+    const c = data.settings.collections.find(x => x.id === state.colOpen); if (!c) return;
+    const v = prompt('모음집 이름', c.name); if (!v || !v.trim()) return; c.name = v.trim(); touch(); render();
+  },
+  'col-del': () => {
+    const c = data.settings.collections.find(x => x.id === state.colOpen); if (!c) return;
+    if (!confirm(`"${c.name}" 모음집을 지울까요? 안에 있던 오답은 지워지지 않아요.`)) return;
+    for (const e of data.exams) for (const w of e.wrongs || []) if (w.cols?.includes(c.id)) w.cols = w.cols.filter(x => x !== c.id);
+    data.settings.collections = data.settings.collections.filter(x => x !== c); state.colOpen = null; touch(); render();
+  },
+  'col-out': t => { const f = findWrong(t.dataset.id); if (!f) return; f.w.cols = (f.w.cols || []).filter(x => x !== state.colOpen); touch(); render(); },
+  'col-pick': () => { state.pick = new Set(); state.pickSubj = ''; render(); window.scrollTo(0, 0); },
+  'pick-tog': t => { const s2 = state.pick, id = t.dataset.id; s2.has(id) ? s2.delete(id) : s2.add(id); render(); },
+  'pick-subj': t => { state.pickSubj = t.dataset.s; render(); },
+  'pick-cancel': () => { state.pick = null; render(); },
+  'pick-done': () => {
+    const id = state.colOpen; let n = 0;
+    for (const wid of state.pick){ const f = findWrong(wid); if (f && !inCol(f.w, id)){ f.w.cols = [...(f.w.cols || []), id]; n++; } }
+    state.pick = null; touch(); render(); toast(`${n}개 문항을 담았어요.`);
+  },
+  'n-subj': t => { state.nSubj = t.dataset.s; render(); },
   'del-wrong': t => {
     const e = cur(), id = t.dataset.id;
     if (hasNote(id) && !confirm('이 오답에 붙인 사진과 텍스트도 함께 지워져요. 지울까요?')) return;
     e.wrongs = e.wrongs.filter(w => w.id !== id); store.delNote(id); touch(); render();
   },
   'wn-open': t => { state.wn = {wrongId:t.dataset.id}; state.crop = null; renderSheet(); $('#sheet')?.scrollTo(0, 0); },
-  'wn-close': () => closeSheet(),
+  'wn-close': () => { const f = findWrong(state.wn?.wrongId); if (f && !f.w.ans && !confirm('정답이 아직 없어요. 그대로 닫을까요?')) return; closeSheet(); },
   'img-zoom': t => t.closest('.shot')?.classList.toggle('big'),
   'img-del': t => {
     if (!confirm('이 사진을 지울까요?')) return;
@@ -1974,8 +2144,6 @@ const ACT = {
     if (n.text.trim() && !confirm('지금 텍스트 뒤에 읽은 글자를 덧붙일까요?')) return;
     runOcr(id, srcs);
   },
-  'wb-subj': t => { state.wbSubj = t.dataset.s; state.wbLimit = 15; render(); },
-  'wb-more': () => { state.wbLimit += 15; const L = $('#wb-list'); if (L){ L.innerHTML = wrongListHtml(); hydrateImgs(L); } },
   'export-json': () => download(JSON.stringify({...data, notes:Object.fromEntries([...notes].filter(([, n]) => n.text.trim()).map(([k, n]) => [k, {text:n.text}]))}, null, 2), `모의고사기록_${data.settings.year}.json`, 'application/json'),
   'export-csv': () => {
     const q = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
@@ -1987,9 +2155,9 @@ const ACT = {
     rows.push([], ['시험','종류','과목','문항','걸린 시간(초)']);
     for (const e of sortedExams()) for (const s of examSubs(e)) for (const l of e.scores?.[s.key]?.laps || [])
       rows.push([examName(e), e.type, s.name, l.no, Math.round(l.ms / 1000)]);
-    rows.push([], ['시험','종류','과목','문항','틀린 이유','메모']);
+    rows.push([], ['시험','종류','과목','문항','틀린 이유','정답','내가 고른 답','모음집','메모']);
     for (const e of sortedExams()) for (const w of e.wrongs || [])
-      rows.push([examName(e), e.type, subjects().find(s => s.key === w.subj)?.name || w.subj, w.no, w.reason, w.note]);
+      rows.push([examName(e), e.type, subjects().find(s => s.key === w.subj)?.name || w.subj, w.no, w.reason, ansText(w.ans), mineText(w), (w.cols || []).map(colName).join(' / '), w.note]);
     download('\uFEFF' + rows.map(r => r.map(q).join(',')).join('\r\n'), `모의고사기록_${data.settings.year}.csv`, 'text/csv');
   },
   logout: async () => { if (saveTimer) await flush(); await fb.A.signOut(fb.auth); },
