@@ -193,6 +193,7 @@ input::placeholder{color:var(--sub);opacity:.7}
 .ring.low #tm-time{color:var(--omr)}
 #tm-sub{font-size:14px;color:var(--sub)}
 .tbtns{display:grid;grid-template-columns:2fr 1fr;gap:8px;width:100%;max-width:360px}
+.tbtns .btn{white-space:nowrap;padding-left:6px;padding-right:6px}
 #tm-msg{min-height:24px;margin:10px 0 0;font-weight:700;color:var(--omr)}
 .tabs button.run,.side nav button.run{position:relative}
 .tabs button.run::after{content:"";position:absolute;top:7px;left:calc(50% + 10px);width:8px;height:8px;border-radius:50%;background:var(--omr)}
@@ -280,7 +281,6 @@ html.fs-on, html.fs-on body{overflow:hidden}
 .wbitem .grow{display:flex;flex-direction:column;gap:2px}
 .wbitem .d{font-size:12px}
 .snip{font-size:13px;color:var(--ink);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#ocrMsg.busy{color:var(--omr);font-weight:700}
 
 /* 정답·모음집 */
 .ansrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 8px}
@@ -307,6 +307,34 @@ html.fs-on, html.fs-on body{overflow:hidden}
 .pickbar{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 2fr;gap:8px;padding:10px 0;background:var(--card);z-index:3}
 @media (min-width:700px) and (min-height:560px){ .pickbar{bottom:0} .nsplit{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:18px;align-items:start}
   .nsplit .ncols{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px)} }
+
+/* 스캔 */
+#cropSvg{position:absolute;pointer-events:none;overflow:visible}
+#cropMag{position:absolute;width:110px;height:110px;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.45);pointer-events:none;background:#000}
+.scanprev{background:#2a2a2a;border-radius:12px;padding:10px;margin:6px 0 10px;display:flex;justify-content:center}
+#scanCv{max-width:100%;height:auto;display:block;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+input[type=range]{-webkit-appearance:auto;appearance:auto;background:none;border:0;padding:0;accent-color:var(--ink);height:32px}
+.scanbusy{color:#fff;font-size:14px;padding:40px 0}
+
+/* 퀴즈 */
+.ovl{z-index:46}
+.qprog{height:6px;background:var(--field);border-radius:3px;overflow:hidden;margin:2px 0 6px}
+.qprog i{display:block;height:100%;background:var(--ink)}
+.qimg{width:100%;border-radius:8px;background:#fff;display:block;margin-top:10px;max-height:62vh;object-fit:contain;cursor:zoom-in}
+.qimg.zoom{max-height:none;cursor:zoom-out}
+.qnoimg{padding:22px 16px;text-align:center;border:1.5px dashed var(--line);border-radius:12px;color:var(--sub);margin-top:10px}
+.qans{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.qans .abtn{width:100%;height:58px;border-radius:14px;font-size:22px}
+.abtn.right{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.abtn.wrongpick{background:var(--omr);border-color:var(--omr);color:#fff}
+.qfb{font-size:24px;font-weight:800;margin:0 0 8px}
+.qfb.no{color:var(--omr)}
+.qrow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:15px}
+.qrow b{font-size:17px}
+.qscore{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1.1;text-align:center;margin:6px 0}
+.solvedtag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:6px;background:var(--ink);color:var(--card);margin-left:4px}
+.setlabel{font-size:13px;font-weight:700;color:var(--sub);margin:14px 0 4px}
+.setlabel:first-child{margin-top:0}
 
 /* 회차별 성적표 */
 .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
@@ -470,7 +498,7 @@ const mode = window.FIREBASE_CONFIG ? 'cloud' : 'local';
 const NOSLEEP_MP4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMzbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAl10cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHVbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABgG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUBzdGJsAAAAwHN0c2QAAAAAAAAAAQAAALBhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANmF2Y0MBZAAK/+EAGWdkAAqscgRewEQAAAMABAAAAwAIPEiWEYABAAZo6EOPLIv9+PgAAAAAEHBhc3AAAAABAAAAAQAAABRidHJ0AAAAAAAAC1AAAAtQAAAAGHN0dHMAAAAAAAAAAQAAAAIAAEAAAAAAFHN0c3MAAAAAAAAAAQAAAAEAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAIAAAABAAAAHHN0c3oAAAAAAAAAAAAAAAIAAALHAAAADQAAABRzdGNvAAAAAAAAAAEAAANjAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAAAIZnJlZQAAAtxtZGF0AAACrwYF//+r3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NCByMzEwOCAzMWUxOWY5IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTE2IGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMzMgbWU9dW1oIHN1Ym1lPTEwIHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MjQgY2hyb21hX21lPTEgdHJlbGxpcz0yIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS0yIHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTggYl9weXJhbWlkPTIgYl9hZGFwdD0yIGJfYmlhcz0wIGRpcmVjdD0zIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTYwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAABBliIEAAt/+99M/zLLsmiWBAAAACUGaCC2IK//+8A==';
 const fb = {};
 let user = null, data = null, charts = [];
-const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, colOpen:null, nq:'', nSubj:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(localStorage.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
+const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, ov:null, colOpen:null, nq:'', nSubj:'', nSolved:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(localStorage.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
 
 function defaultData(){
   const now = new Date();
@@ -505,7 +533,13 @@ function normalize(d){
   s.elective = {...base.settings.elective, ...(s.elective || {})};
   s.names = {...base.settings.names, ...(s.names || {})};
   s.layout = {phone: normLayout(s.layout?.phone), tablet: normLayout(s.layout?.tablet)};
-  s.collections = Array.isArray(s.collections) ? s.collections.filter(c => c && c.id).map(c => ({id:c.id, name:c.name || '이름 없는 모음집', createdAt:c.createdAt || Date.now()})) : [];
+  s.collections = Array.isArray(s.collections) ? s.collections.filter(c => c && c.id).map(c => ({id:c.id, name:c.name || '이름 없는 모음집', createdAt:c.createdAt || Date.now(), auto:c.auto || ''})) : [];
+  if (!s.defColsDone){
+    // 통합사회·통합과학 모음집을 처음 한 번 만들어 두고, 그 과목 오답은 자동으로 담기게 함
+    for (const [k, nm] of [['s1','통합사회'], ['s2','통합과학']])
+      if (!s.collections.some(c => c.auto === k)) s.collections.push({id:'col-' + k, name:nm, createdAt:Date.now(), auto:k});
+    s.defColsDone = true;
+  }
   s.series = Array.isArray(s.series) ? s.series.map(x => ({id:x.id || newId(), name:x.name || '이름 없음', type:x.type === '하프' ? '하프' : '사설', subjs:Array.isArray(x.subjs) ? x.subjs : [], hidden:!!x.hidden, targets: x.targets && typeof x.targets === 'object' ? x.targets : {}})) : [];
   const exams = Array.isArray(d.exams) ? d.exams.map(e => {
     const o = {
@@ -1046,11 +1080,11 @@ function renderDetail(e, wide){
       <input id="wr-no" inputmode="numeric" enterkeyhint="done" placeholder="번호" aria-label="문항 번호" value="${esc(W.no)}"></div>
     <select id="wr-reason" aria-label="틀린 이유" style="margin-bottom:2px">${REASONS.map(r => `<option ${r===W.reason?'selected':''}>${r}</option>`).join('')}</select>
     ${ansBlock('form', W.ansType, W.ans, W.mine)}
-    ${colChips('form', W.cols)}
+    ${colChips('form', W.cols, W.subj)}
     <input id="wr-note" enterkeyhint="done" placeholder="메모 (선택): 무엇을 놓쳤는지" value="${esc(W.note)}" style="margin:10px 0 8px">
     <button class="btn" data-act="add-wrong" style="margin-bottom:6px">오답 추가</button>`;
   h += wr.length ? wr.map(w => { const n = notes.get(w.id), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
-      const badge = [n?.imgs.length ? `사진 ${n.imgs.length}` : '', n?.text.trim() ? '텍스트' : ''].filter(Boolean).join(', ');
+      const badge = n?.imgs.length ? `사진 ${n.imgs.length}` : '';
       return `<div class="wrong"><span class="no">${esc(w.no || '?')}번</span><button class="wopen" data-act="wn-open" data-id="${w.id}"><b>${esc(nameOf(w.subj))}</b> <span class="sub">${esc(w.reason)}</span>${w.note ? `<div class="sub">${esc(w.note)}</div>` : ''}
         <div class="wbadge">${w.ans ? `<span class="anschip" style="margin:0 6px 0 0">정답 ${esc(ansText(w.ans))}</span>` : `<span class="anschip miss" style="margin:0 6px 0 0">정답 미입력</span>`}${badge ? esc(badge) + ' ›' : '사진 추가 ›'}</div></button>${img ? `<img class="thumb" data-img="${img.id}" alt="">` : ''}
       <button class="x" data-act="del-wrong" data-id="${w.id}" aria-label="삭제">×</button></div>`; }).join('')
@@ -1222,7 +1256,22 @@ async function saveAudio(file){
 }
 
 // ═════════════════════════ 모의고사 타이머 ═════════════════════════
-const timer = { subj:null, total:0, remain:0, endAt:0, running:false, done:false, warned:{w10:false, w5:false}, audio:false };
+const timer = { subj:null, total:0, remain:0, endAt:0, running:false, done:false, warned:{w10:false, w5:false}, audio:false, laps:[] };
+const LAP_SUBJ = ['ko'];
+const tElapsed = () => timer.total - (timer.running ? Math.max(0, timer.endAt - Date.now()) : timer.remain);
+const tLapSum = () => timer.laps.reduce((a, b) => a + b, 0);
+function timerLap(){ const ms = Math.max(0, tElapsed() - tLapSum()); if (ms < 1000) return; timer.laps.push(ms); }
+function lapLine(){
+  if (!LAP_SUBJ.includes(timer.subj) || !timerStarted()) return '';
+  const last = timer.laps[timer.laps.length - 1];
+  return `${timer.laps.length + 1}구간 ${clock(Math.max(0, tElapsed() - tLapSum()), true)}${last ? `, 직전 ${clock(last, true)}` : ''}`;
+}
+function lapTableHtml(){
+  if (!timer.laps.length) return '';
+  const max = Math.max(...timer.laps); let acc = 0;
+  return `<div class="laps" style="width:100%;max-width:420px;margin-top:12px;text-align:left"><div class="lapsum"><span>구간 <b>${timer.laps.length}개</b></span><span>평균 <b>${clock(tLapSum() / timer.laps.length, true)}</b></span></div>`
+    + timer.laps.map((ms, i) => { acc += ms; return `<div class="laprow ${ms === max ? 'max' : ''}" style="grid-template-columns:56px minmax(0,1fr) 62px 86px"><b>${i + 1}구간</b><div><div class="bar" style="height:8px;border-radius:4px;width:${Math.max(4, ms / max * 100)}%"></div></div><span class="lt">${clock(ms, true)}</span><span class="sub" style="text-align:right;white-space:nowrap">누적 ${clock(acc, true)}</span></div>`; }).join('') + `</div>`;
+}
 function timerMinutes(key){
   const old = data.settings.system === 'old';
   return {ko:80, ma:100, en: media ? 70 : 50, hi:30, s1: old ? 30 : 40, s2: old ? 30 : 40, fl:40}[key] ?? 60;
@@ -1231,7 +1280,7 @@ const timerStarted = () => timer.subj && (timer.running || timer.remain < timer.
 function setTimerSubj(k){
   stopPreview();
   Object.assign(timer, {subj:k, total:timerMinutes(k) * 60000, running:false, done:false, warned:{w10:false, w5:false}, audio: k === 'en' && !!media});
-  timer.remain = timer.total;
+  timer.remain = timer.total; timer.laps = [];
   enAudio.pause(); try { enAudio.currentTime = 0; } catch {}
 }
 function clock(ms, up=false){
@@ -1260,6 +1309,7 @@ function timerPause(){
   enAudio.pause(); syncWake();
 }
 function timerFinish(){
+  if (LAP_SUBJ.includes(timer.subj) && timer.laps.length){ const rest = timer.total - tLapSum(); if (rest >= 1000) timer.laps.push(rest); }
   timer.remain = 0; timer.running = false; timer.done = true;
   enAudio.pause(); syncWake(); beep(BEEP_END);
   const s = subjects().find(x => x.key === timer.subj);
@@ -1282,8 +1332,12 @@ function renderTimer(){
   h += `<section class="card tcard"><div class="ring ${timer.remain <= 300000 && timerStarted() ? 'low' : ''}" id="tm-ring">
       <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="trk" cx="60" cy="60" r="${R}"/><circle class="bar2" id="tm-bar" cx="60" cy="60" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - frac)}"/></svg>
       <div class="mid"><div id="tm-time" role="timer" aria-live="off">${clock(timer.remain)}</div><div id="tm-sub">${esc(s.name)} ${timerMinutes(s.key)}분</div></div></div>
-    <div class="tbtns"><button class="btn" data-act="tm-main">${main}</button><button class="btn ghost" data-act="tm-reset" ${timerStarted() ? '' : 'disabled'}>초기화</button></div>
+    ${LAP_SUBJ.includes(s.key)
+      ? `<div class="tbtns" style="grid-template-columns:1.6fr 1fr 1fr;max-width:420px"><button class="btn" data-act="tm-main">${main}</button><button class="btn ghost" data-act="tm-lap" ${running ? '' : 'disabled'}>랩</button><button class="btn ghost" data-act="tm-reset" ${timerStarted() ? '' : 'disabled'}>초기화</button></div>
+         <div class="fs-lap" id="tm-lap" style="font-size:15px"></div>`
+      : `<div class="tbtns"><button class="btn" data-act="tm-main">${main}</button><button class="btn ghost" data-act="tm-reset" ${timerStarted() ? '' : 'disabled'}>초기화</button></div>`}
     <button class="btn ghost" data-act="tm-fs" style="max-width:360px;margin-top:8px">전체화면으로 보기</button>
+    ${LAP_SUBJ.includes(s.key) ? `<div id="tm-laps" style="width:100%;display:flex;justify-content:center">${lapTableHtml()}</div>` : ''}
     <div id="tm-msg" role="status">${timer.done ? '시험 종료' : running ? `종료 예정 ${clockTime(new Date(timer.endAt))}` : ''}</div>
     <p class="hint" style="margin:6px 0 0">종료 10분 전, 5분 전, 종료 때 알림음이 울려요. 타이머가 도는 동안 화면이 꺼지지 않아요. 다른 앱으로 나가 있어도 시간은 정확히 흐르지만, 알림음은 앱으로 돌아왔을 때 울려요.</p></section>`;
   if (s.key === 'en'){
@@ -1311,6 +1365,7 @@ function tickTimer(){
     timer.warned.w10 = true; if (timer.remain > 300000){ beep(BEEP_WARN); toast('종료 10분 전이에요.'); } }
   if (!timer.warned.w5 && min > 5 && timer.remain <= 300000 && timer.remain > 0){ timer.warned.w5 = true; timer.warned.w10 = true; beep(BEEP_WARN); toast('종료 5분 전이에요.'); }
   if (timer.remain <= 0){ timerFinish(); return; }
+  const lp = $('#tm-lap'); if (lp) lp.textContent = lapLine();
   const t = $('#tm-time'); if (!t) return;
   t.textContent = clock(timer.remain);
   const bar = $('#tm-bar'); if (bar){ const C = 2 * Math.PI * 54; bar.setAttribute('stroke-dashoffset', C * (1 - timer.remain / timer.total)); }
@@ -1411,8 +1466,10 @@ function fsTimerHtml(){
   const main = timer.running ? '일시정지' : timer.done ? '다시 시작' : timer.remain < timer.total ? '계속' : '시작';
   return `<div class="fs-top"><div><div class="fs-t1">${esc(s.name)} 모의고사</div><div class="fs-t2">시험 시간 ${timerMinutes(s.key)}분</div></div>
       <button class="fs-close" data-act="fs-close">닫기</button></div>
-    <div class="fs-mid"><div class="fs-label" id="fs-label"></div><div class="fs-time" id="fs-time" role="timer"></div><div class="fs-sub" id="fs-sub"></div><div class="fs-prog"><i id="fs-prog"></i></div></div>
-    <div class="fs-bot"><button class="btn fs-main" data-act="fs-tm">${main}</button></div>`;
+    <div class="fs-mid"><div class="fs-label" id="fs-label"></div><div class="fs-time" id="fs-time" role="timer"></div><div class="fs-sub" id="fs-sub"></div><div class="fs-prog"><i id="fs-prog"></i></div><div class="fs-lap" id="fs-lap"></div></div>
+    <div class="fs-bot">${LAP_SUBJ.includes(s.key) && timer.running
+        ? `<div class="fs-btns"><button class="btn fs-main" data-act="fs-tlap">랩</button><button class="btn ghost fs-main" data-act="fs-tm">${main}</button></div>`
+        : `<button class="btn fs-main" data-act="fs-tm">${main}</button>`}</div>`;
 }
 function fsSwHtml(){
   const e = data.exams.find(x => x.id === state.fs.examId), s = subjects().find(x => x.key === state.fs.subj);
@@ -1441,6 +1498,7 @@ function tickFs(){
     sub = timer.running ? `종료 예정 ${clockTime(new Date(timer.endAt))}` : '';
     prog = timer.total ? 1 - timer.remain / timer.total : 0;
     low = timer.remain <= 300000 && timerStarted();
+    const LP = $('#fs-lap'); if (LP) LP.textContent = lapLine();
   } else {
     const e = data.exams.find(x => x.id === state.fs.examId); if (!e) return;
     const k = state.fs.subj, ms = swMs(e, k), tg = e.scores?.[k]?.target, on = sw.examId === e.id && sw.subj === k;
@@ -1471,7 +1529,7 @@ const notes = new Map(), imgCache = new Map();
 const normNote = n => ({text:n?.text || '', imgs:Array.isArray(n?.imgs) ? n.imgs : [], examId:n?.examId || '', subj:n?.subj || ''});
 function findWrong(id){ for (const e of data.exams) for (const w of e.wrongs || []) if (w.id === id) return {e, w}; return null; }
 function noteOf(id){ if (!notes.has(id)){ const f = findWrong(id); notes.set(id, normNote({examId:f?.e.id, subj:f?.w.subj})); } return notes.get(id); }
-const hasNote = id => { const n = notes.get(id); return !!(n && (n.text.trim() || n.imgs.length)); };
+const hasNote = id => { const n = notes.get(id); return !!(n && n.imgs.length); };
 const store = {
   cloud(){ return mode === 'cloud'; },
   col(n){ return fb.F.collection(fb.db, 'users', user.uid, n); },
@@ -1530,23 +1588,12 @@ function sheetHtml({e, w}){
       ${n.imgs.length ? `<div class="imgs">${n.imgs.map(im => `<figure class="shot ${im.kind === 'fig' ? 'fig' : 'prob'}"><img data-img="${im.id}" data-act="img-zoom" alt="${im.kind === 'fig' ? '그림' : '문항'} 사진">
         <figcaption>${im.kind === 'fig' ? '그림' : '문항'}</figcaption><button class="x" data-act="img-del" data-id="${im.id}" aria-label="사진 삭제">×</button></figure>`).join('')}</div>` : ''}
       <label class="btn ${n.imgs.length ? 'ghost' : ''}" style="display:block;text-align:center">사진 찍기 또는 고르기<input id="shotFile" type="file" accept="image/*" hidden></label>
-      <p class="hint" style="margin:8px 0 0">사진을 고르면 문항 부분만 잘라 저장해요. 그래프나 자료 그림은 '그림'으로 따로 잘라 두면 좋아요.</p></section>
-    <section class="card"><div class="row between" style="margin-bottom:6px"><h2 style="margin:0">문제 텍스트</h2>
-        <button class="btn sm ghost" data-act="ocr-run" ${hasProb ? '' : 'disabled'}>사진에서 글자 읽기</button></div>
-      <p class="hint" id="ocrMsg">${hasProb ? '문항 사진을 저장하면 글자를 자동으로 읽어요.' : '문항 사진을 저장하면 글자를 자동으로 읽어요.'} 사진 앱에서 글자를 길게 눌러 복사한 뒤 붙여 넣어도 돼요.</p>
-      <textarea id="wnText" data-bind="wntext" rows="9" placeholder="문제 텍스트" style="min-height:180px">${esc(n.text)}</textarea></section>
+      <p class="hint" style="margin:8px 0 0">사진을 고르면 네 모서리를 맞춰 반듯하게 펴고, 스캔한 것처럼 정리해서 저장해요. 그래프나 자료 그림은 '그림'으로 따로 저장해 두면 좋아요.</p></section>
     <section class="card"><h2>정답과 모음집</h2>${ansBlock('sheet', w.ans?.type || w.ansType || 'mc', w.ans?.v ?? '', w.mine ?? '')}${colChips('sheet', w.cols || [])}</section>
     <section class="card"><h2>틀린 이유와 메모</h2>
       <div class="grid2" style="margin:0 0 8px"><select data-bind="wrong" data-k="reason" aria-label="틀린 이유">${REASONS.map(r => `<option ${r === w.reason ? 'selected' : ''}>${r}</option>`).join('')}</select>
         <input data-bind="wrong" data-k="no" value="${esc(w.no)}" inputmode="numeric" placeholder="문항 번호" aria-label="문항 번호"></div>
       <textarea data-bind="wrong" data-k="note" placeholder="무엇을 놓쳤는지, 다음엔 어떻게 풀지">${esc(w.note)}</textarea></section></div>`;
-}
-function cropHtml(){
-  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">사진 자르기</div><div class="fs-t2">모서리를 끌어 필요한 부분만 남겨 주세요</div></div>
-      <button class="fs-close" data-act="crop-cancel">취소</button></div>
-    <div class="cropwrap" id="cropWrap"><canvas id="cropCv"></canvas><div id="cropBox" class="cropbox"><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i></div></div>
-    <div class="grid2" style="margin:0 0 8px"><button class="btn ghost" data-act="crop-rot">90° 회전</button><button class="btn ghost" data-act="crop-full">전체 선택</button></div>
-    <div class="grid2" style="margin:0"><button class="btn" data-act="crop-save" data-kind="prob">문항으로 저장</button><button class="btn ghost" data-act="crop-save" data-kind="fig">그림으로 저장</button></div></div>`;
 }
 function renderSheet(){
   let el = $('#sheet');
@@ -1562,7 +1609,8 @@ function renderSheet(){
 }
 function closeSheet(){ flushNote(); state.wn = null; state.crop = null; renderSheet(); render(); }
 
-// ── 사진 자르기 ──
+// ── 사진 등록: 네 모서리 맞추기 → 반듯하게 펴기 → 스캔 보정 ──
+const DEF_QUAD = () => [{x:.06, y:.06}, {x:.94, y:.06}, {x:.94, y:.94}, {x:.06, y:.94}];
 function loadImageFile(file){
   return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image();
     im.onload = () => { res(im); setTimeout(() => URL.revokeObjectURL(u), 1000); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('이미지를 열 수 없어요')); }; im.src = u; });
@@ -1576,115 +1624,208 @@ function buildCropSrc(){
   x.translate(c.width / 2, c.height / 2); x.rotate(rot * Math.PI / 180); x.drawImage(img, -w / 2, -h / 2, w, h);
   state.crop.src = c;
 }
+async function startCrop(file){
+  try {
+    const img = await loadImageFile(file);
+    state.crop = {img, rot:0, quad:DEF_QUAD(), step:'corners', mode:'bw', k:50};
+    buildCropSrc(); renderSheet();
+  } catch { alert('사진을 열 수 없어요. 다른 사진으로 다시 해 주세요.'); }
+}
+function cropHtml(){
+  const c = state.crop;
+  if (c.step === 'corners') return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">모서리 맞추기</div><div class="fs-t2">네 점을 문항의 네 귀퉁이에 맞춰 주세요</div></div>
+      <button class="fs-close" data-act="crop-cancel">취소</button></div>
+    <div class="cropwrap" id="cropWrap"><canvas id="cropCv"></canvas><svg id="cropSvg" aria-hidden="true"></svg><canvas id="cropMag" width="220" height="220" hidden></canvas></div>
+    <div class="grid2" style="margin:0 0 8px"><button class="btn ghost" data-act="crop-rot">90° 회전</button><button class="btn ghost" data-act="crop-reset">처음 위치로</button></div>
+    <button class="btn" data-act="crop-next">다음: 스캔 보정</button></div>`;
+  const modes = [['bw','흑백 스캔'],['color','컬러 스캔'],['orig','원본']];
+  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">스캔 보정</div><div class="fs-t2">보정 방식을 고르고 저장해 주세요</div></div>
+      <button class="fs-close" data-act="crop-cancel">취소</button></div>
+    <div class="scanprev"><canvas id="scanCv"></canvas></div>
+    <div class="seg" role="tablist">${modes.map(([m, l]) => `<button role="tab" aria-selected="${c.mode === m}" class="${c.mode === m ? 'on' : ''}" data-act="crop-mode" data-m="${m}">${l}</button>`).join('')}</div>
+    ${c.mode !== 'orig' ? `<label class="flabel" for="cropStr" style="justify-content:space-between"><span>글자 진하기</span><span>연하게 ↔ 진하게</span></label>
+      <input type="range" id="cropStr" min="0" max="100" step="1" value="${c.k}" style="width:100%">` : ''}
+    <button class="btn ghost" data-act="crop-back" style="margin:8px 0">‹ 모서리 다시 맞추기</button>
+    <div class="grid2" style="margin:0"><button class="btn" data-act="crop-save" data-kind="prob">문항으로 저장</button><button class="btn ghost" data-act="crop-save" data-kind="fig">그림으로 저장</button></div></div>`;
+}
 function layoutCrop(){
-  const cv = $('#cropCv'), wrap = $('#cropWrap'); if (!cv || !state.crop) return;
-  const src = state.crop.src, maxW = wrap.clientWidth, maxH = Math.max(260, window.innerHeight * 0.62);
+  if (!state.crop) return;
+  if (state.crop.step === 'enhance') return drawScan();
+  const cv = $('#cropCv'), wrap = $('#cropWrap'); if (!cv) return;
+  const src = state.crop.src, maxW = wrap.clientWidth, maxH = Math.max(280, window.innerHeight * 0.62);
   const k = Math.min(maxW / src.width, maxH / src.height), dpr = Math.min(2, window.devicePixelRatio || 1);
   const W = Math.round(src.width * k), H = Math.round(src.height * k);
   cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
   cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
-  placeBox();
+  drawQuad();
 }
-function placeBox(){
-  const cv = $('#cropCv'), box = $('#cropBox'); if (!cv || !box) return;
-  const r = state.crop.rect, W = cv.clientWidth, H = cv.clientHeight;
-  Object.assign(box.style, {left:(cv.offsetLeft + r.x * W) + 'px', top:(cv.offsetTop + r.y * H) + 'px', width:(r.w * W) + 'px', height:(r.h * H) + 'px'});
+function drawQuad(active=-1){
+  const cv = $('#cropCv'), svg = $('#cropSvg'); if (!cv || !svg) return;
+  const W = cv.clientWidth, H = cv.clientHeight;
+  Object.assign(svg.style, {left:cv.offsetLeft + 'px', top:cv.offsetTop + 'px', width:W + 'px', height:H + 'px'});
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const P = state.crop.quad.map(p => [p.x * W, p.y * H]);
+  const poly = P.map(p => p.join(',')).join(' ');
+  svg.innerHTML = `<path d="M0 0H${W}V${H}H0Z M${P.map(p => p.join(' ')).join(' L')}Z" fill="rgba(0,0,0,.5)" fill-rule="evenodd"/>
+    <polygon points="${poly}" fill="none" stroke="#fff" stroke-width="2"/>`
+    + P.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i === active ? 14 : 11}" fill="${i === active ? 'rgba(255,255,255,.35)' : '#fff'}" stroke="#fff" stroke-width="2.5"/>`).join('');
+}
+function drawMag(i){
+  const mag = $('#cropMag'), cv = $('#cropCv'); if (!mag || !cv) return;
+  if (i < 0){ mag.hidden = true; return; }
+  const src = state.crop.src, p = state.crop.quad[i], W = cv.clientWidth, H = cv.clientHeight;
+  const disp = W / src.width, zoom = 2.6, rw = 110 / (disp * zoom);
+  const cx = p.x * src.width, cy = p.y * src.height, g = mag.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, 220, 220);
+  g.drawImage(src, cx - rw / 2, cy - rw / 2, rw, rw, 0, 0, 220, 220);
+  g.strokeStyle = '#ff3b6b'; g.lineWidth = 3; g.beginPath(); g.moveTo(110, 80); g.lineTo(110, 140); g.moveTo(80, 110); g.lineTo(140, 110); g.stroke();
+  let left = cv.offsetLeft + p.x * W - 55, top = cv.offsetTop + p.y * H - 150;
+  if (top < 4) top = cv.offsetTop + p.y * H + 40;
+  left = clamp(left, 4, cv.offsetLeft + W - 114);
+  Object.assign(mag.style, {left:left + 'px', top:top + 'px'}); mag.hidden = false;
 }
 let cropDrag = null;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 document.addEventListener('pointerdown', ev => {
-  if (!state.crop || !ev.target.closest('#cropBox')) return;
-  ev.preventDefault(); const cv = $('#cropCv');
-  cropDrag = {h:ev.target.dataset.h || 'move', x0:ev.clientX, y0:ev.clientY, r:{...state.crop.rect}, W:cv.clientWidth, H:cv.clientHeight};
-  try { ev.target.setPointerCapture(ev.pointerId); } catch {}
+  if (!state.crop || state.crop.step !== 'corners') return;
+  const wrap = ev.target.closest('#cropWrap'); if (!wrap) return;
+  const cv = $('#cropCv'), r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+  let best = -1, bd = 56;
+  state.crop.quad.forEach((p, i) => { const d = Math.hypot(p.x * r.width - x, p.y * r.height - y); if (d < bd){ bd = d; best = i; } });
+  if (best < 0) return;
+  ev.preventDefault();
+  const p = state.crop.quad[best];
+  cropDrag = {i:best, ox:p.x * r.width - x, oy:p.y * r.height - y};
+  try { wrap.setPointerCapture(ev.pointerId); } catch {}
+  drawQuad(best); drawMag(best);
 });
 document.addEventListener('pointermove', ev => {
   if (!cropDrag) return;
   ev.preventDefault();
-  const dx = (ev.clientX - cropDrag.x0) / cropDrag.W, dy = (ev.clientY - cropDrag.y0) / cropDrag.H, m = 0.05, h = cropDrag.h;
-  let {x, y, w, h:hh} = cropDrag.r;
-  if (h === 'move'){ x = clamp(x + dx, 0, 1 - w); y = clamp(y + dy, 0, 1 - hh); }
-  else {
-    if (h.includes('w')){ const nx = clamp(x + dx, 0, x + w - m); w += x - nx; x = nx; }
-    if (h.includes('e')) w = clamp(w + dx, m, 1 - x);
-    if (h.includes('n')){ const ny = clamp(y + dy, 0, y + hh - m); hh += y - ny; y = ny; }
-    if (h.includes('s')) hh = clamp(hh + dy, m, 1 - y);
-  }
-  state.crop.rect = {x, y, w, h:hh}; placeBox();
+  const r = $('#cropCv').getBoundingClientRect();
+  state.crop.quad[cropDrag.i] = {x:clamp((ev.clientX - r.left + cropDrag.ox) / r.width, 0, 1), y:clamp((ev.clientY - r.top + cropDrag.oy) / r.height, 0, 1)};
+  drawQuad(cropDrag.i); drawMag(cropDrag.i);
 }, {passive:false});
-['pointerup','pointercancel'].forEach(t => document.addEventListener(t, () => { cropDrag = null; }));
+['pointerup','pointercancel'].forEach(t => document.addEventListener(t, () => { if (cropDrag){ cropDrag = null; drawQuad(); drawMag(-1); } }));
 window.addEventListener('resize', () => { if (state.crop) layoutCrop(); });
 
-async function startCrop(file){
-  try {
-    const img = await loadImageFile(file);
-    state.crop = {img, rot:0, rect:{x:.04, y:.04, w:.92, h:.92}}; buildCropSrc(); renderSheet();
-  } catch { alert('사진을 열 수 없어요. 다른 사진으로 다시 해 주세요.'); }
+// 원근 보정: 결과 직사각형의 점을 원래 사진의 사각형으로 옮기는 변환을 구해 픽셀마다 가져옴
+function homography(srcPts, dstPts){
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++){
+    const {x:u, y:v} = dstPts[i], {x, y} = srcPts[i];
+    A.push([u, v, 1, 0, 0, 0, -u * x, -v * x]); b.push(x);
+    A.push([0, 0, 0, u, v, 1, -u * y, -v * y]); b.push(y);
+  }
+  for (let i = 0; i < 8; i++){
+    let p = i; for (let r = i + 1; r < 8; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+    [A[i], A[p]] = [A[p], A[i]]; [b[i], b[p]] = [b[p], b[i]];
+    for (let r = 0; r < 8; r++){ if (r === i) continue; const f = A[r][i] / A[i][i]; for (let c = i; c < 8; c++) A[r][c] -= f * A[i][c]; b[r] -= f * b[i]; }
+  }
+  return b.map((v, i) => v / A[i][i]);
 }
-function cropCanvas(maxW, minW=0){
-  const {src, rect} = state.crop;
-  const sx = Math.round(rect.x * src.width), sy = Math.round(rect.y * src.height), sw2 = Math.max(1, Math.round(rect.w * src.width)), sh2 = Math.max(1, Math.round(rect.h * src.height));
-  let k = Math.min(1, maxW / sw2); if (minW && sw2 * k < minW) k = Math.min(2.5, minW / sw2);
-  const out = document.createElement('canvas'); out.width = Math.round(sw2 * k); out.height = Math.round(sh2 * k);
-  const x = out.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, out.width, out.height); x.drawImage(src, sx, sy, sw2, sh2, 0, 0, out.width, out.height);
+function warpQuad(){
+  const src = state.crop.src, sw = src.width, sh = src.height;
+  const Q = state.crop.quad.map(p => ({x:p.x * sw, y:p.y * sh}));
+  const d = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  let W = Math.max(d(Q[0], Q[1]), d(Q[3], Q[2])), H = Math.max(d(Q[0], Q[3]), d(Q[1], Q[2]));
+  const k = Math.min(1, 2000 / Math.max(W, H)); W = Math.max(20, Math.round(W * k)); H = Math.max(20, Math.round(H * k));
+  const M = homography(Q, [{x:0, y:0}, {x:W, y:0}, {x:W, y:H}, {x:0, y:H}]);
+  const sd = src.getContext('2d').getImageData(0, 0, sw, sh).data;
+  const out = document.createElement('canvas'); out.width = W; out.height = H;
+  const octx = out.getContext('2d'), od = octx.createImageData(W, H), o = od.data;
+  for (let v = 0; v < H; v++){
+    const vv = v + 0.5;
+    for (let u = 0; u < W; u++){
+      const uu = u + 0.5, den = M[6] * uu + M[7] * vv + 1;
+      const x = clamp((M[0] * uu + M[1] * vv + M[2]) / den - 0.5, 0, sw - 1.001), y = clamp((M[3] * uu + M[4] * vv + M[5]) / den - 0.5, 0, sh - 1.001);
+      const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0, i00 = (y0 * sw + x0) * 4, i01 = i00 + sw * 4, kk = (v * W + u) * 4;
+      for (let c = 0; c < 3; c++) o[kk + c] = (sd[i00 + c] * (1 - fx) + sd[i00 + 4 + c] * fx) * (1 - fy) + (sd[i01 + c] * (1 - fx) + sd[i01 + 4 + c] * fx) * fy;
+      o[kk + 3] = 255;
+    }
+  }
+  octx.putImageData(od, 0, 0);
   return out;
+}
+// 스캔 보정: 종이 밝기(그림자·조명 얼룩)를 추정해 나눠 주고, 글자 진하기를 조절
+function scanImage(canvas, mode, k){
+  const W = canvas.width, H = canvas.height;
+  const out = document.createElement('canvas'); out.width = W; out.height = H;
+  const ctx = out.getContext('2d');
+  ctx.drawImage(canvas, 0, 0);
+  if (mode === 'orig') return out;
+  const id = ctx.getImageData(0, 0, W, H), d = id.data, N = W * H;
+  const g = new Float32Array(N);
+  for (let i = 0, j = 0; i < N; i++, j += 4) g[i] = 0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2];
+  // 종이 밝기 지도: 작은 칸마다 밝은 값 → 넓혀서 글자 영향 제거 → 부드럽게
+  const s = Math.max(6, Math.round(Math.max(W, H) / 60)), bw = Math.ceil(W / s), bh = Math.ceil(H / s);
+  let sm = new Float32Array(bw * bh);
+  for (let by = 0; by < bh; by++) for (let bx = 0; bx < bw; bx++){
+    let mx = 0; const y1 = Math.min(H, (by + 1) * s), x1 = Math.min(W, (bx + 1) * s);
+    for (let y = by * s; y < y1; y += 2) for (let x = bx * s; x < x1; x += 2){ const v = g[y * W + x]; if (v > mx) mx = v; }
+    sm[by * bw + bx] = mx;
+  }
+  const pass = (fn) => { const t = new Float32Array(bw * bh); for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++){ let acc = fn === 'max' ? 0 : 0, n = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++){ const yy = y + dy, xx = x + dx; if (yy < 0 || xx < 0 || yy >= bh || xx >= bw) continue; const v = sm[yy * bw + xx]; if (fn === 'max'){ if (v > acc) acc = v; } else { acc += v; n++; } }
+      t[y * bw + x] = fn === 'max' ? acc : acc / n; } sm = t; };
+  pass('max'); pass('avg'); pass('avg'); pass('avg');
+  const lo = 0.30 + 0.45 * (k / 100), hi = 0.90, span = hi - lo;
+  for (let y = 0; y < H; y++){
+    const fy = clamp(y / s - 0.5, 0, bh - 1), y0 = fy | 0, y1 = Math.min(bh - 1, y0 + 1), ty = fy - y0;
+    for (let x = 0; x < W; x++){
+      const fx = clamp(x / s - 0.5, 0, bw - 1), x0 = fx | 0, x1 = Math.min(bw - 1, x0 + 1), tx = fx - x0;
+      const bg = Math.max(40, (sm[y0 * bw + x0] * (1 - tx) + sm[y0 * bw + x1] * tx) * (1 - ty) + (sm[y1 * bw + x0] * (1 - tx) + sm[y1 * bw + x1] * tx) * ty);
+      const i = y * W + x, j = i * 4;
+      if (mode === 'bw'){
+        let v = (g[i] / bg - lo) / span; v = clamp(v, 0, 1); v = v * v * (3 - 2 * v);
+        d[j] = d[j + 1] = d[j + 2] = v * 255;
+      } else {
+        for (let c = 0; c < 3; c++){ let v = (d[j + c] / bg - lo * 0.8) / (hi - lo * 0.8); d[j + c] = clamp(v, 0, 1) * 255; }
+      }
+    }
+  }
+  ctx.putImageData(id, 0, 0);
+  return out;
+}
+let scanTimer = null;
+function drawScan(){
+  const cv = $('#scanCv'); if (!cv || !state.crop?.prev) return;
+  const r = scanImage(state.crop.prev, state.crop.mode, state.crop.k);
+  cv.width = r.width; cv.height = r.height; cv.getContext('2d').drawImage(r, 0, 0);
 }
 function compress(canvas){
   // Firestore 문서 한 개는 1MB까지라 사진을 약 700KB 이하로 줄임
-  let c = canvas, q = 0.75, url = c.toDataURL('image/jpeg', q);
+  let c = canvas;
+  if (c.width > 1400){ const d = document.createElement('canvas'); d.width = 1400; d.height = Math.round(c.height * 1400 / c.width); d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); c = d; }
+  let q = 0.8, url = c.toDataURL('image/jpeg', q);
   while (url.length > 700000){
-    if (q > 0.45){ q -= 0.1; }
-    else { const d = document.createElement('canvas'); d.width = Math.round(c.width * 0.8); d.height = Math.round(c.height * 0.8); d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); c = d; q = 0.7; }
+    if (q > 0.5) q -= 0.1;
+    else { const d = document.createElement('canvas'); d.width = Math.round(c.width * 0.8); d.height = Math.round(c.height * 0.8); d.getContext('2d').drawImage(c, 0, 0, d.width, d.height); c = d; q = 0.75; }
     url = c.toDataURL('image/jpeg', q);
   }
   return url;
 }
-async function saveCrop(kind){
-  const id = state.wn?.wrongId; if (!id || !state.crop) return;
-  const url = compress(cropCanvas(1400));
-  const ocrSrc = kind === 'prob' ? cropCanvas(2400, 1600) : null;
-  const n = noteOf(id), imgId = newId();
-  n.imgs = [...n.imgs, {id:imgId, kind}];
-  store.setImg(imgId, url, {wrongId:id, kind}); store.setNote(id, n);
-  state.crop = null; renderSheet();
-  if (ocrSrc && !n.text.trim()) runOcr(id, [ocrSrc]);
+function cropNext(){
+  const btn = document.querySelector('[data-act="crop-next"]'); if (btn){ btn.disabled = true; btn.textContent = '펴는 중…'; }
+  setTimeout(() => {
+    const c = state.crop; if (!c) return;
+    c.warped = warpQuad();
+    const pk = Math.min(1, 900 / Math.max(c.warped.width, c.warped.height));
+    const pv = document.createElement('canvas'); pv.width = Math.round(c.warped.width * pk); pv.height = Math.round(c.warped.height * pk);
+    pv.getContext('2d').drawImage(c.warped, 0, 0, pv.width, pv.height);
+    c.prev = pv; c.step = 'enhance'; renderSheet();
+  }, 30);
 }
-
-// ── 글자 인식 (기기 안에서) ──
-let ocrWorker = null, ocrBusy = false;
-function loadScript(src){ return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('불러오기 실패')); document.head.appendChild(sc); }); }
-function setOcrMsg(t, busy=true){ const m = $('#ocrMsg'); if (m){ m.textContent = t; m.classList.toggle('busy', busy); } }
-function cleanOcr(t){
-  return t.split('\n').map(line => {
-    let l = line.replace(/[ \t]+/g, ' ').trim();
-    const toks = l.split(' '), single = toks.filter(x => /^[가-힣]$/.test(x)).length;
-    if (toks.length > 3 && single / toks.length > 0.5) l = l.replace(/([가-힣]) (?=[가-힣])/g, '$1');
-    return l;
-  }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
-}
-async function runOcr(wrongId, sources){
-  if (ocrBusy){ toast('글자를 읽는 중이에요. 잠시만 기다려 주세요.'); return; }
-  if (!localStorage.getItem('mocklog-ocr-ready') && !confirm('처음 한 번 글자 인식 데이터(십여 MB)를 내려받아요. Wi-Fi에서 하시는 걸 권해요. 계속할까요?')) return;
-  ocrBusy = true; setOcrMsg('글자 인식 준비 중…');
-  try {
-    if (!window.Tesseract) await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
-    if (!ocrWorker) ocrWorker = await Tesseract.createWorker('kor', 1, { logger: m => {
-      if (m.status === 'loading language traineddata') setOcrMsg(`인식 데이터 내려받는 중 ${Math.round((m.progress || 0) * 100)}%`);
-      else if (m.status === 'recognizing text') setOcrMsg(`글자 읽는 중 ${Math.round((m.progress || 0) * 100)}%`);
-    }});
-    localStorage.setItem('mocklog-ocr-ready', '1');
-    const out = [];
-    for (const src of sources){ const {data:r} = await ocrWorker.recognize(src); out.push(cleanOcr(r.text || '')); }
-    const txt = out.filter(Boolean).join('\n\n');
-    if (txt){
-      const n = noteOf(wrongId); n.text = n.text.trim() ? `${n.text.trim()}\n\n${txt}` : txt; store.setNote(wrongId, n);
-      if (state.wn?.wrongId === wrongId && !state.crop){ const ta = $('#wnText'); if (ta) ta.value = n.text; }
-      setOcrMsg('글자를 읽었어요. 틀리게 읽힌 부분은 직접 고쳐 주세요.', false);
-    } else setOcrMsg('읽을 수 있는 글자를 찾지 못했어요. 사진을 더 가까이, 반듯하게 찍어 보세요.', false);
-  } catch (err) {
-    console.error(err); ocrWorker = null;
-    setOcrMsg(navigator.onLine ? '글자 인식에 실패했어요. 다시 시도해 주세요.' : '처음 한 번은 인터넷 연결이 필요해요.', false);
-  } finally { ocrBusy = false; }
+function saveCrop(kind){
+  const id = state.wn?.wrongId, c = state.crop; if (!id || !c?.warped) return;
+  document.querySelectorAll('[data-act="crop-save"]').forEach(b => b.disabled = true);
+  setTimeout(() => {
+    const url = compress(scanImage(c.warped, c.mode, c.k));
+    const n = noteOf(id), imgId = newId();
+    n.imgs = [...n.imgs, {id:imgId, kind}];
+    store.setImg(imgId, url, {wrongId:id, kind, scan:c.mode}); store.setNote(id, n);
+    state.crop = null; renderSheet(); toast(kind === 'fig' ? '그림을 저장했어요.' : '문항 사진을 저장했어요.');
+  }, 30);
 }
 
 // ═════════════════════════ 오답노트 메뉴: 모음집 ═════════════════════════
@@ -1702,12 +1843,12 @@ function wrongItem(e, w, colId){
   return `<div class="wbitem" style="cursor:default"><button class="wopen" data-act="wn-open" data-id="${w.id}" style="display:flex;gap:10px;align-items:flex-start">
       ${img ? `<img class="thumb" data-img="${img.id}" alt="">` : `<span class="thumb ph">${esc(subjName(w.subj))}</span>`}
       <span class="grow"><span><b>${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="tag plain">${esc(w.reason)}</span>${w.ans ? `<span class="anschip">정답 ${esc(ansText(w.ans))}</span>` : `<span class="anschip miss">정답 미입력</span>`}</span>
-      <span class="sub d">${esc(examName(e))}${e.date ? `, ${fmtDate(e.date)}` : ''}</span>${w.note ? `<span class="snip">${esc(w.note)}</span>` : ''}</span></button>
+      <span class="sub d">${esc(examName(e))}${e.date ? `, ${fmtDate(e.date)}` : ''}${w.quiz?.length ? `, 퀴즈 ${w.quiz.length}회 중 정답 ${w.quiz.filter(q => q.ok).length}회` : ''}${isSolved(w) ? '<span class="solvedtag">해결</span>' : ''}</span>${w.note ? `<span class="snip">${esc(w.note)}</span>` : ''}</span></button>
     ${colId !== 'all' ? `<button class="btn sm ghost" data-act="col-out" data-id="${w.id}" style="flex:none">빼기</button>` : ''}</div>`;
 }
 function colListHtml(){
   const id = state.colOpen || 'all', q = state.nq.trim().toLowerCase();
-  let list = allWrongs().filter(({w}) => inCol(w, id) && (!state.nSubj || w.subj === state.nSubj));
+  let list = allWrongs().filter(({w}) => inCol(w, id) && (!state.nSubj || w.subj === state.nSubj) && (!state.nSolved || (state.nSolved === 'ok') === isSolved(w)));
   if (q) list = list.filter(({e, w}) => [w.note, w.reason, examName(e), `${w.no}번`, subjName(w.subj), ansText(w.ans)].join(' ').toLowerCase().includes(q));
   if (!list.length) return `<p class="sub" style="margin:8px 0 0">${q || state.nSubj ? '조건에 맞는 문항이 없어요.' : id === 'all' ? '아직 등록한 오답이 없어요. 시험 기록에서 틀린 문항을 추가해 보세요.' : '아직 담긴 문항이 없어요. "문항 담기"로 넣어 보세요.'}</p>`;
   return list.map(({e, w}) => wrongItem(e, w, id)).join('');
@@ -1727,9 +1868,11 @@ function colView(wide){
   if (state.nSubj && !used.some(s => s.key === state.nSubj)) state.nSubj = '';
   return `${wide ? '' : `<button class="back" data-act="col-back">‹ 모음집 목록</button>`}
     <section class="card"><div class="colhead"><h2>${esc(colName(id))}</h2>
-      ${all ? '' : `<button class="btn sm" data-act="col-pick">문항 담기</button><button class="btn sm ghost" data-act="col-rename">이름 바꾸기</button><button class="btn sm danger" data-act="col-del">삭제</button>`}</div>
+      ${all ? '' : `<button class="btn sm ghost" data-act="col-pick">문항 담기</button><button class="btn sm ghost" data-act="col-rename">이름 바꾸기</button><button class="btn sm danger" data-act="col-del">삭제</button>`}</div>
+      <div class="grid2" style="margin:0 0 10px"><button class="btn" data-act="quiz-setup">퀴즈 시작</button><button class="btn ghost" data-act="pdf-setup">PDF로 출력</button></div>
       <input id="n-q" type="search" enterkeyhint="search" placeholder="메모, 시험 이름, 번호, 정답 검색" value="${esc(state.nq)}" autocomplete="off" aria-label="검색" style="margin-bottom:8px">
-      ${used.length > 1 ? `<div class="chipsrow"><button class="fchip ${!state.nSubj ? 'on' : ''}" data-act="n-subj" data-s="">전체</button>${used.map(s => `<button class="fchip ${state.nSubj === s.key ? 'on' : ''}" data-act="n-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
+      <div class="chipsrow">${[['','전체'],['un','미해결'],['ok','해결']].map(([v, l]) => `<button class="fchip ${state.nSolved === v ? 'on' : ''}" data-act="n-solved" data-v="${v}">${l}</button>`).join('')}</div>
+      ${used.length > 1 ? `<div class="chipsrow"><button class="fchip ${!state.nSubj ? 'on' : ''}" data-act="n-subj" data-s="">전체 과목</button>${used.map(s => `<button class="fchip ${state.nSubj === s.key ? 'on' : ''}" data-act="n-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
       <div id="n-list">${colListHtml()}</div></section>`;
 }
 function pickView(){
@@ -1751,6 +1894,239 @@ function renderNotes(){
   return state.colOpen ? colView(false) : colsPanel(false);
 }
 
+// ═════════════════════════ 오답 퀴즈 ═════════════════════════
+const isSolved = w => { const q = w.quiz || []; return q.length >= 2 && q[q.length - 1].ok && q[q.length - 2].ok; };
+const lastWrongInQuiz = w => { const q = w.quiz || []; return q.length > 0 && !q[q.length - 1].ok; };
+const imgsOf = w => { const n = notes.get(w.id); return n ? [...n.imgs.filter(i => i.kind !== 'fig'), ...n.imgs.filter(i => i.kind === 'fig')] : []; };
+function quizPool(o){
+  const base = allWrongs().filter(({w}) => inCol(w, o.col) && (!o.subj || w.subj === o.subj));
+  const withAns = base.filter(({w}) => w.ans);
+  let list = withAns;
+  if (o.target === 'un') list = list.filter(({w}) => !isSolved(w));
+  if (o.target === 'lastwrong') list = list.filter(({w}) => lastWrongInQuiz(w));
+  return {list, noAns: base.length - withAns.length};
+}
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const normAns = v => String(v ?? '').replace(/\s+/g, '').toLowerCase();
+function checkAns(w, pick){
+  if (w.ans.type === 'mc') return String(pick) === String(w.ans.v);
+  const a = normAns(w.ans.v), b = normAns(pick);
+  if (a !== '' && !isNaN(a) && b !== '' && !isNaN(b)) return Number(a) === Number(b);
+  return a === b;
+}
+function chipRow(act, k, opts, cur3){
+  return `<div class="chipsrow wrap">${opts.map(([v, l]) => `<button class="fchip ${cur3 === v ? 'on' : ''}" data-act="${act}" data-k="${k}" data-v="${v}">${esc(l)}</button>`).join('')}</div>`;
+}
+function subjOpts(col){ return [['', '전체'], ...subjects().filter(s => allWrongs().some(({w}) => inCol(w, col) && w.subj === s.key)).map(s => [s.key, s.name])]; }
+function quizSetupHtml(o){
+  const {list, noAns} = quizPool(o);
+  const n = o.count === 'all' ? list.length : Math.min(list.length, Number(o.count));
+  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">퀴즈 시작</div><div class="fs-t2">${esc(colName(o.col))}</div></div><button class="fs-close" data-act="ov-close">닫기</button></div>
+    <section class="card">
+      <div class="setlabel">과목</div>${chipRow('qs', 'subj', subjOpts(o.col), o.subj)}
+      <div class="setlabel">대상</div>${chipRow('qs', 'target', [['all','전부'],['un','아직 해결 못 한 것'],['lastwrong','지난 퀴즈에서 틀린 것']], o.target)}
+      <div class="setlabel">문항 수</div>${chipRow('qs', 'count', [['all','전체'],['10','10문항'],['20','20문항']], o.count)}
+      <div class="setlabel">순서</div>${chipRow('qs', 'order', [['random','무작위'],['seq','등록순']], o.order)}
+      <p class="sub" style="margin:14px 0 12px">풀 수 있는 문항 ${list.length}개${noAns ? `, 정답이 없는 ${noAns}문항은 빠져요` : ''}. 두 번 연속 맞히면 "해결"로 표시돼요.</p>
+      <button class="btn" data-act="quiz-go" ${n ? '' : 'disabled'}>${n ? `${n}문항 풀기` : '풀 수 있는 문항이 없어요'}</button></section></div>`;
+}
+function quizStart(o, ids){
+  let ids2 = ids;
+  if (!ids2){
+    let list = quizPool(o).list;
+    if (o.order === 'random') list = shuffle([...list]); else list = [...list].reverse();
+    if (o.count !== 'all') list = list.slice(0, Number(o.count));
+    ids2 = list.map(({w}) => w.id);
+  }
+  state.ov = {kind:'quiz', o, q:{ids:ids2, i:0, res:[], phase:'q', pick:null}};
+  renderOv();
+}
+function quizHtml(){
+  const {o, q} = state.ov;
+  if (q.phase === 'done') return quizDoneHtml();
+  const f = findWrong(q.ids[q.i]);
+  if (!f){ q.i++; if (q.i >= q.ids.length) q.phase = 'done'; return quizHtml(); }
+  const {e, w} = f, ims = imgsOf(w), mc = w.ans.type === 'mc', fb = q.phase === 'fb', r = q.res[q.res.length - 1];
+  let h = `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">퀴즈 ${q.i + 1} / ${q.ids.length}</div><div class="fs-t2">${esc(colName(o.col))}</div></div><button class="fs-close" data-act="quiz-exit">그만하기</button></div>
+    <div class="qprog"><i style="width:${(q.i + (fb ? 1 : 0)) / q.ids.length * 100}%"></i></div>
+    <section class="card"><div><b style="font-size:17px">${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="sub">${esc(examName(e))}</span></div>
+      ${ims.length ? ims.map(im => `<img class="qimg" data-img="${im.id}" data-act="q-zoom" alt="${im.kind === 'fig' ? '그림' : '문항'} 사진">`).join('')
+        : `<div class="qnoimg">사진이 없는 문항이에요.${w.note ? `<div style="color:var(--ink);margin-top:8px">메모: ${esc(w.note)}</div>` : ''}</div>`}</section>`;
+  if (!fb){
+    h += `<section class="card"><h2>${mc ? '정답을 고르세요' : '정답을 입력하세요'}</h2>`
+      + (mc ? `<div class="qans">${CIRC.map((c, i) => `<button class="abtn" data-act="q-pick" data-v="${i + 1}" aria-label="${c}">${i + 1}</button>`).join('')}</div>`
+            : `<div class="row"><input id="q-short" autocomplete="off" enterkeyhint="done" placeholder="답" aria-label="답"><button class="btn sm" data-act="q-submit" style="flex:none;min-width:72px">확인</button></div>`)
+      + `</section>`;
+  } else {
+    h += `<section class="card"><p class="qfb ${r.ok ? '' : 'no'}">${r.ok ? '정답이에요' : '틀렸어요'}</p>`
+      + (mc ? `<div class="qans" style="margin-bottom:10px">${CIRC.map((c, i) => { const v = String(i + 1); return `<span class="abtn ${v === String(w.ans.v) ? 'right' : (v === String(r.pick) ? 'wrongpick' : '')}" aria-label="${c}">${i + 1}</span>`; }).join('')}</div>` : '')
+      + `<div class="qrow"><span>정답</span><b>${esc(ansText(w.ans))}</b></div>`
+      + `<div class="qrow"><span>이번에 고른 답</span><b>${esc(mc ? (CIRC[Number(r.pick) - 1] || r.pick) : r.pick)}</b></div>`
+      + (mineText(w) ? `<div class="qrow"><span>처음 틀렸을 때 고른 답</span><b>${esc(mineText(w))}</b></div>` : '')
+      + (w.note && ims.length ? `<div class="qrow"><span>메모</span><span style="text-align:right">${esc(w.note)}</span></div>` : '')
+      + (isSolved(w) ? `<p class="sub" style="margin:8px 0 0">두 번 연속 맞혀서 "해결"로 표시했어요.</p>` : '')
+      + `<button class="btn" data-act="q-next" style="margin-top:12px">${q.i + 1 < q.ids.length ? '다음 문항' : '결과 보기'}</button></section>`;
+  }
+  return h + `</div>`;
+}
+function quizDoneHtml(){
+  const {o, q} = state.ov, ok = q.res.filter(r => r.ok).length, n = q.res.length, wrong = q.res.filter(r => !r.ok);
+  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">퀴즈 결과</div><div class="fs-t2">${esc(colName(o.col))}</div></div><button class="fs-close" data-act="ov-close">닫기</button></div>
+    <section class="card" style="text-align:center"><div class="qscore">${ok} / ${n}</div><div class="sub">${n ? Math.round(ok / n * 100) : 0}% 맞혔어요</div></section>
+    ${wrong.length ? `<section class="card"><h2>틀린 문항</h2>${wrong.map(r => { const f = findWrong(r.id); if (!f) return ''; return `<div class="qrow"><span>${esc(subjName(f.w.subj))} ${esc(f.w.no)}번 <span class="sub">${esc(examName(f.e))}</span></span><b>정답 ${esc(ansText(f.w.ans))}</b></div>`; }).join('')}</section>` : ''}
+    <div class="grid2" style="margin:0">${wrong.length ? `<button class="btn" data-act="quiz-retry-wrong">틀린 문항만 다시</button>` : `<button class="btn" data-act="quiz-retry-all">같은 문항 다시</button>`}
+      <button class="btn ghost" data-act="ov-close">끝내기</button></div></div>`;
+}
+function quizAnswer(pick){
+  const q = state.ov.q, f = findWrong(q.ids[q.i]); if (!f || q.phase !== 'q') return;
+  const ok = checkAns(f.w, pick);
+  f.w.quiz = [...(f.w.quiz || []), {t:Date.now(), ok, pick:String(pick)}].slice(-20);
+  q.res.push({id:f.w.id, ok, pick:String(pick)}); q.phase = 'fb'; touch(); renderOv();
+}
+
+// ═════════════════════════ 오답노트 PDF 출력 ═════════════════════════
+function loadScript(src){ return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('불러오기 실패')); document.head.appendChild(sc); }); }
+const loadImgUrl = url => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
+function pdfPool(o){ return allWrongs().filter(({w}) => inCol(w, o.col) && (!o.subj || w.subj === o.subj) && (o.target !== 'un' || !isSolved(w))).reverse(); }
+function pdfSetupHtml(o){
+  const all = pdfPool(o), withImg = all.filter(({w}) => imgsOf(w).length);
+  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">PDF로 출력</div><div class="fs-t2">${esc(colName(o.col))}</div></div><button class="fs-close" data-act="ov-close">닫기</button></div>
+    <section class="card">
+      <div class="setlabel">과목</div>${chipRow('ps', 'subj', subjOpts(o.col), o.subj)}
+      <div class="setlabel">대상</div>${chipRow('ps', 'target', [['all','전부'],['un','미해결만']], o.target)}
+      <div class="setlabel">메모</div>${chipRow('ps', 'memo', [['1','넣기'],['0','빼기']], o.memo)}
+      <p class="sub" style="margin:14px 0 12px">사진이 있는 ${withImg.length}문항을 A4 2단으로 채워 넣고, 마지막 쪽에 정답표를 붙여요.${all.length - withImg.length ? ` 사진이 없는 ${all.length - withImg.length}문항은 빠져요.` : ''}</p>
+      <button class="btn" data-act="pdf-go" ${withImg.length && !o.busy ? '' : 'disabled'}>${o.busy ? '만드는 중…' : 'PDF 만들기'}</button>
+      <p class="hint" id="pdfMsg" style="margin:10px 0 0">${o.msg || ''}</p>
+      ${o.blob ? `<div class="grid2" style="margin:8px 0 0"><button class="btn" data-act="pdf-share">공유·저장</button><button class="btn ghost" data-act="pdf-dl">다운로드</button></div>` : ''}</section></div>`;
+}
+function wrapLines(ctx, text, maxW){
+  const out = []; let line = '';
+  for (const ch of String(text)){ const t = line + ch; if (ctx.measureText(t).width > maxW && line){ out.push(line); line = ch; } else line = t; }
+  if (line) out.push(line); return out;
+}
+async function makePdf(o){
+  const setMsg = t => { o.msg = t; const m = $('#pdfMsg'); if (m) m.textContent = t; };
+  o.busy = true; o.blob = null; renderOv();
+  try {
+    setMsg('준비 중…');
+    if (!window.jspdf) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    const pool = pdfPool(o).filter(({w}) => imgsOf(w).length);
+    const items = [];
+    for (let i = 0; i < pool.length; i++){
+      setMsg(`사진 불러오는 중 ${i + 1}/${pool.length}`);
+      const ims = [];
+      for (const im of imgsOf(pool[i].w)){ const u = await store.getImg(im.id); if (u) ims.push(await loadImgUrl(u)); }
+      if (ims.length) items.push({...pool[i], ims});
+    }
+    if (!items.length){ setMsg('사진을 불러오지 못했어요.'); o.busy = false; renderOv(); return; }
+    // A4 200dpi 기준 배치
+    const PW = 1654, PH = 2339, M = 110, GUT = 56, COLW = (PW - 2 * M - GUT) / 2, TOP = M + 90, BOT = PH - M - 40;
+    const FONT = getComputedStyle(document.body).fontFamily;
+    const mctx = document.createElement('canvas').getContext('2d');
+    const LABEL = 46, GAP = 40, IGAP = 14, MLINE = 32;
+    let page = 0, col = 0, y = TOP; const place = [];
+    items.forEach((it, idx) => {
+      mctx.font = `24px ${FONT}`;
+      const memo = o.memo === '1' && it.w.note ? wrapLines(mctx, '메모: ' + it.w.note, COLW) : [];
+      const memoH = memo.length ? memo.length * MLINE + 10 : 0;
+      let hs = it.ims.map(im => im.naturalHeight * COLW / im.naturalWidth);
+      const fixed = LABEL + memoH + IGAP * (hs.length - 1), avail = BOT - TOP;
+      let sum = hs.reduce((a, b) => a + b, 0);
+      if (fixed + sum > avail){ const k = (avail - fixed) / sum; hs = hs.map(h => h * k); sum = avail - fixed; }
+      const total = fixed + sum;
+      if (y + total > BOT && y > TOP){ if (col === 0){ col = 1; y = TOP; } else { page++; col = 0; y = TOP; } }
+      place.push({it, idx, page, col, y, hs, memo});
+      y += total + GAP;
+    });
+    const itemPages = page + 1;
+    // 정답표 배치
+    const ROWH = 48, ansTop = TOP + 80, perCol = Math.floor((BOT - ansTop) / ROWH), perPage = perCol * 2;
+    const ansPages = Math.ceil(items.length / perPage), total = itemPages + ansPages;
+    const header = (ctx, p, title) => {
+      ctx.fillStyle = '#111'; ctx.font = `bold 36px ${FONT}`; ctx.textBaseline = 'alphabetic';
+      ctx.fillText(title, M, M + 40);
+      ctx.font = `24px ${FONT}`; ctx.fillStyle = '#777'; const d = new Date(), ds = `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+      ctx.fillText(ds, PW - M - ctx.measureText(ds).width, M + 40);
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(M, M + 62); ctx.lineTo(PW - M, M + 62); ctx.stroke();
+      ctx.font = `22px ${FONT}`; ctx.fillStyle = '#888'; const pn = `${p + 1} / ${total}`;
+      ctx.fillText(pn, (PW - ctx.measureText(pn).width) / 2, PH - M + 30);
+    };
+    const pdf = new window.jspdf.jsPDF({unit:'mm', format:'a4', compress:true});
+    const title = `${colName(o.col)} 오답노트`;
+    for (let p = 0; p < total; p++){
+      setMsg(`쪽 만드는 중 ${p + 1}/${total}`);
+      await new Promise(r => setTimeout(r, 0));
+      const cv = document.createElement('canvas'); cv.width = PW; cv.height = PH;
+      const ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, PW, PH);
+      if (p < itemPages){
+        header(ctx, p, title);
+        ctx.strokeStyle = '#d0d0d0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(M + COLW + GUT / 2, TOP - 10); ctx.lineTo(M + COLW + GUT / 2, BOT); ctx.stroke();
+        for (const pl of place.filter(x => x.page === p)){
+          const x = M + pl.col * (COLW + GUT); let yy = pl.y;
+          ctx.fillStyle = '#111'; ctx.font = `bold 32px ${FONT}`; const num = `${pl.idx + 1}.`; ctx.fillText(num, x, yy + 32);
+          const nw = ctx.measureText(num + ' ').width;
+          ctx.font = `23px ${FONT}`; ctx.fillStyle = '#666';
+          let src = `${subjName(pl.it.w.subj)} ${pl.it.w.no}번, ${examName(pl.it.e)}`;
+          while (ctx.measureText(src).width > COLW - nw - 4 && src.length > 4) src = src.slice(0, -2) + '…';
+          ctx.fillText(src, x + nw, yy + 31);
+          yy += LABEL;
+          pl.it.ims.forEach((im, j) => {
+            const h = pl.hs[j], w2 = Math.min(COLW, im.naturalWidth * h / im.naturalHeight);
+            ctx.drawImage(im, x, yy, w2, h); yy += h + IGAP;
+          });
+          yy -= IGAP;
+          if (pl.memo.length){ ctx.font = `24px ${FONT}`; ctx.fillStyle = '#444'; yy += 10; pl.memo.forEach(l => { yy += MLINE; ctx.fillText(l, x, yy - 6); }); }
+        }
+      } else {
+        const ap = p - itemPages; header(ctx, p, `${title} 정답`);
+        ctx.font = `bold 30px ${FONT}`; ctx.fillStyle = '#111'; ctx.fillText('정답표', M, TOP + 30);
+        const slice = items.slice(ap * perPage, (ap + 1) * perPage);
+        slice.forEach((it, k) => {
+          const c = Math.floor(k / perCol), r = k % perCol, x = M + c * (COLW + GUT), yy = ansTop + r * ROWH;
+          const n = ap * perPage + k + 1;
+          ctx.fillStyle = r % 2 ? '#fff' : '#f3f3f3'; ctx.fillRect(x, yy, COLW, ROWH);
+          ctx.fillStyle = '#111'; ctx.font = `bold 26px ${FONT}`; ctx.fillText(`${n}.`, x + 12, yy + 33);
+          ctx.font = `bold 28px ${FONT}`; ctx.fillText(ansText(it.w.ans) || '-', x + 90, yy + 34);
+          ctx.font = `21px ${FONT}`; ctx.fillStyle = '#666';
+          let src = `${subjName(it.w.subj)} ${it.w.no}번, ${examName(it.e)}`;
+          while (ctx.measureText(src).width > COLW - 200 && src.length > 4) src = src.slice(0, -2) + '…';
+          ctx.fillText(src, x + 180, yy + 32);
+        });
+      }
+      if (p) pdf.addPage();
+      pdf.addImage(cv.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, 210, 297);
+      cv.width = cv.height = 0;
+    }
+    o.blob = pdf.output('blob');
+    o.fname = `${colName(o.col)}_오답노트.pdf`.replace(/[\\/:*?"<>|]/g, '_');
+    o.msg = `${total}쪽짜리 PDF를 만들었어요. (문항 ${items.length}개, 정답표 ${ansPages}쪽)`;
+  } catch (err) {
+    console.error(err);
+    o.msg = navigator.onLine ? 'PDF를 만들지 못했어요. 다시 시도해 주세요.' : '처음 한 번은 인터넷 연결이 필요해요.';
+  }
+  o.busy = false; renderOv();
+}
+function downloadBlob(blob, name){
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), {href:url, download:name});
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+// ── 공통 오버레이 (퀴즈·출력) ──
+function renderOv(){
+  let el = $('#ov');
+  if (!state.ov){ el?.remove(); document.documentElement.classList.toggle('fs-on', !!(state.fs || state.wn)); return; }
+  if (!el){ el = document.createElement('div'); el.id = 'ov'; el.className = 'sheet ovl'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); document.body.appendChild(el); }
+  document.documentElement.classList.add('fs-on');
+  const k = state.ov.kind;
+  el.innerHTML = k === 'quizSetup' ? quizSetupHtml(state.ov.o) : k === 'quiz' ? quizHtml() : pdfSetupHtml(state.ov.o);
+  hydrateImgs(el);
+  if (k === 'quiz' && state.ov.q.phase !== 'q') el.scrollTo(0, el.scrollHeight);
+  else if (k === 'quiz') { el.scrollTo(0, 0); $('#q-short')?.focus(); }
+}
+function closeOv(){ state.ov = null; renderOv(); render(); }
+
 // ── 정답·모음집 입력 (등록 칸과 편집 화면에서 같이 씀) ──
 function ansBlock(scope, type, v, mine){
   const mc = type !== 'short';
@@ -1762,9 +2138,11 @@ function ansBlock(scope, type, v, mine){
     ${mc ? `<div class="ansrow" role="radiogroup" aria-label="내가 고른 답">${CIRC.map((c, i) => `<button class="abtn mine ${String(mine) === String(i+1) ? 'on' : ''}" role="radio" aria-checked="${String(mine) === String(i+1)}" data-act="mine-pick" data-scope="${scope}" data-v="${i+1}" aria-label="${c}">${i+1}</button>`).join('')}</div>`
          : `<input id="${scope === 'form' ? 'wr-mine-s' : 'sh-mine-s'}" ${scope === 'sheet' ? 'data-bind="wans" data-k="mine"' : ''} value="${esc(mine)}" placeholder="내가 쓴 답" autocomplete="off" style="margin:4px 0 8px" aria-label="내가 고른 답">`}`;
 }
-function colChips(scope, sel){
+function colChips(scope, sel, subj){
   const cols = data.settings.collections;
-  return `<div class="flabel"><span>모음집 (여러 개 가능)</span></div><div class="chipsrow wrap" style="margin-top:4px">${cols.map(c => { const on = sel.includes(c.id);
+  return `<div class="flabel"><span>모음집 (여러 개 가능)</span></div><div class="chipsrow wrap" style="margin-top:4px">${cols.map(c => {
+      if (scope === 'form' && c.auto && c.auto === subj) return `<span class="fchip on" title="이 과목 오답은 자동으로 담겨요" style="cursor:default">${esc(c.name)} (자동)</span>`;
+      const on = sel.includes(c.id);
       return `<button class="fchip ${on ? 'on' : ''}" aria-pressed="${on}" data-act="col-tog" data-scope="${scope}" data-id="${c.id}">${esc(c.name)}</button>`; }).join('')}
     <button class="fchip" data-act="col-new-inline" data-scope="${scope}">＋ 새 모음집</button></div>`;
 }
@@ -1810,6 +2188,7 @@ function go(patch){ if ('examId' in patch && !('newSer' in patch)) state.newSer 
 // ═════════════════════════ 입력 처리 ═════════════════════════
 document.addEventListener('input', ev => {
   const el = ev.target;
+  if (el.id === 'cropStr' && state.crop){ state.crop.k = Number(el.value); clearTimeout(scanTimer); scanTimer = setTimeout(drawScan, 40); return; }
   if (el.id === 'n-q'){ state.nq = el.value; const L = $('#n-list'); if (L){ L.innerHTML = colListHtml(); hydrateImgs(L); } return; }
   if (el.id === 'wr-no'){ state.wr.no = el.value; return; }
   if (el.id === 'wr-note'){ state.wr.note = el.value; return; }
@@ -1878,7 +2257,7 @@ document.addEventListener('change', ev => {
     touch(); render();
   }
   else if (el.dataset.bind === 'series'){ render(); }
-  else if (el.id === 'wr-subj') state.wr.subj = el.value;
+  else if (el.id === 'wr-subj'){ state.wr.subj = el.value; render(); }
   else if (el.id === 'wr-reason') state.wr.reason = el.value;
   else if (el.id === 'importFile' && el.files[0]) importJson(el.files[0]);
   else if (el.id === 'auFile' && el.files[0]) saveAudio(el.files[0]);
@@ -1893,6 +2272,8 @@ document.addEventListener('keydown', ev => {
   }
   if (ev.key === 'Enter' && (ev.target.id === 'wr-no' || ev.target.id === 'wr-note')){ ev.preventDefault(); ACT['add-wrong'](); }
   if (ev.key === 'Enter' && (ev.target.id === 'pw')) ACT.login();
+  if (ev.key === 'Enter' && ev.target.id === 'q-short'){ ev.preventDefault(); ACT['q-submit'](); return; }
+  if (ev.key === 'Escape' && state.ov){ closeOv(); return; }
   if (ev.key === 'Escape' && state.wn){ if (state.crop){ state.crop = null; renderSheet(); } else closeSheet(); return; }
   if (ev.key === 'Escape' && state.fs){ fsClose(); return; }
   if (ev.key === 'Enter' && ev.target.id === 'newSerName'){ ev.preventDefault(); ACT['add-series'](); }
@@ -1971,6 +2352,8 @@ const ACT = {
   },
   'fs-tg-clear': () => { const e = data.exams.find(x => x.id === state.fs.examId); if (e){ setTarget(e, state.fs.subj, null); renderFs(); } },
   'tm-fs': () => fsOpen({kind:'timer'}),
+  'tm-lap': () => { if (!timer.running) return; timerLap(); render(); },
+  'fs-tlap': () => { if (!timer.running) return; timerLap(); renderFs(); toast(`${timer.laps.length}구간 ${clock(timer.laps[timer.laps.length - 1], true)}`); },
   'fs-tm': () => { timer.running ? timerPause() : timerStart(); renderFs(); render(); },
   'sw-menu': t => {
     const e = cur(); if (!e) return; const k = t.dataset.s;
@@ -2065,7 +2448,8 @@ const ACT = {
       toast('정답을 입력해야 등록할 수 있어요.');
       const box = $('#form-ans') || $('#wr-ans-s'); box?.classList.remove('need'); void box?.offsetWidth; box?.classList.add('need'); box?.focus?.(); return;
     }
-    const w = {id:newId(), subj:W.subj, no:W.no, reason:W.reason, note:W.note, ans:{type:W.ansType, v:String(W.ans)}, cols:[...W.cols]};
+    const autoCols = data.settings.collections.filter(c => c.auto && c.auto === W.subj).map(c => c.id);
+    const w = {id:newId(), subj:W.subj, no:W.no, reason:W.reason, note:W.note, ans:{type:W.ansType, v:String(W.ans)}, cols:[...new Set([...W.cols.filter(id => !autoCols.includes(id)), ...autoCols])]};
     if (String(W.mine).trim()) w.mine = String(W.mine);
     (e.wrongs ??= []).push(w);
     try { localStorage.setItem('mocklog-lastcols', JSON.stringify(W.cols)); } catch {}
@@ -2119,9 +2503,31 @@ const ACT = {
     state.pick = null; touch(); render(); toast(`${n}개 문항을 담았어요.`);
   },
   'n-subj': t => { state.nSubj = t.dataset.s; render(); },
+  'n-solved': t => { state.nSolved = t.dataset.v; render(); },
+  'quiz-setup': () => { state.ov = {kind:'quizSetup', o:{col:state.colOpen || 'all', subj:state.nSubj || '', target:'all', count:'all', order:'random'}}; renderOv(); },
+  'qs': t => { state.ov.o[t.dataset.k] = t.dataset.v; renderOv(); },
+  'quiz-go': () => quizStart(state.ov.o),
+  'q-pick': t => quizAnswer(t.dataset.v),
+  'q-submit': () => { const v = ($('#q-short')?.value || '').trim(); if (!v){ $('#q-short')?.focus(); return; } quizAnswer(v); },
+  'q-next': () => { const q = state.ov.q; q.i++; q.phase = q.i >= q.ids.length ? 'done' : 'q'; renderOv(); },
+  'q-zoom': t => t.classList.toggle('zoom'),
+  'quiz-exit': () => { if (state.ov.q.res.length && !confirm('퀴즈를 그만둘까요? 지금까지 푼 결과는 저장돼요.')) return; closeOv(); },
+  'quiz-retry-wrong': () => quizStart(state.ov.o, state.ov.q.res.filter(r => !r.ok).map(r => r.id)),
+  'quiz-retry-all': () => quizStart(state.ov.o, state.ov.q.res.map(r => r.id)),
+  'ov-close': () => closeOv(),
+  'pdf-setup': () => { state.ov = {kind:'pdf', o:{col:state.colOpen || 'all', subj:state.nSubj || '', target:'all', memo:'1'}}; renderOv(); },
+  'ps': t => { Object.assign(state.ov.o, {[t.dataset.k]:t.dataset.v, blob:null, msg:''}); renderOv(); },
+  'pdf-go': () => makePdf(state.ov.o),
+  'pdf-share': async () => {
+    const o = state.ov.o; if (!o.blob) return;
+    const f = new File([o.blob], o.fname, {type:'application/pdf'});
+    if (navigator.canShare?.({files:[f]})){ try { await navigator.share({files:[f], title:o.fname}); } catch {} }
+    else downloadBlob(o.blob, o.fname);
+  },
+  'pdf-dl': () => { const o = state.ov.o; if (o.blob) downloadBlob(o.blob, o.fname); },
   'del-wrong': t => {
     const e = cur(), id = t.dataset.id;
-    if (hasNote(id) && !confirm('이 오답에 붙인 사진과 텍스트도 함께 지워져요. 지울까요?')) return;
+    if (hasNote(id) && !confirm('이 오답에 붙인 사진도 함께 지워져요. 지울까요?')) return;
     e.wrongs = e.wrongs.filter(w => w.id !== id); store.delNote(id); touch(); render();
   },
   'wn-open': t => { state.wn = {wrongId:t.dataset.id}; state.crop = null; renderSheet(); $('#sheet')?.scrollTo(0, 0); },
@@ -2133,17 +2539,12 @@ const ACT = {
     n.imgs = n.imgs.filter(i => i.id !== t.dataset.id); store.delImg(t.dataset.id); store.setNote(id, n); renderSheet();
   },
   'crop-cancel': () => { state.crop = null; renderSheet(); },
-  'crop-rot': () => { state.crop.rot = (state.crop.rot + 90) % 360; state.crop.rect = {x:.04, y:.04, w:.92, h:.92}; buildCropSrc(); layoutCrop(); },
-  'crop-full': () => { state.crop.rect = {x:0, y:0, w:1, h:1}; placeBox(); },
+  'crop-rot': () => { state.crop.rot = (state.crop.rot + 90) % 360; state.crop.quad = DEF_QUAD(); buildCropSrc(); layoutCrop(); },
+  'crop-reset': () => { state.crop.quad = DEF_QUAD(); drawQuad(); },
+  'crop-next': () => cropNext(),
+  'crop-back': () => { state.crop.step = 'corners'; renderSheet(); },
+  'crop-mode': t => { state.crop.mode = t.dataset.m; renderSheet(); },
   'crop-save': t => saveCrop(t.dataset.kind),
-  'ocr-run': async () => {
-    const id = state.wn.wrongId, n = noteOf(id);
-    const pick = n.imgs.filter(i => i.kind === 'prob'); const srcs = [];
-    for (const im of (pick.length ? pick : n.imgs)){ const u = await store.getImg(im.id); if (u) srcs.push(u); }
-    if (!srcs.length){ toast('사진을 불러오지 못했어요.'); return; }
-    if (n.text.trim() && !confirm('지금 텍스트 뒤에 읽은 글자를 덧붙일까요?')) return;
-    runOcr(id, srcs);
-  },
   'export-json': () => download(JSON.stringify({...data, notes:Object.fromEntries([...notes].filter(([, n]) => n.text.trim()).map(([k, n]) => [k, {text:n.text}]))}, null, 2), `모의고사기록_${data.settings.year}.json`, 'application/json'),
   'export-csv': () => {
     const q = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
