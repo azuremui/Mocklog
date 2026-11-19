@@ -513,10 +513,17 @@ input[type=range]{-webkit-appearance:auto;appearance:auto;background:none;border
 <script src="config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script type="module">
+// 기기 저장소를 쓸 수 없는 곳(미리보기 같은 격리된 창)에서는 메모리에만 보관
+const LS = (() => {
+  try { const st = window.localStorage; st.setItem('__t', '1'); st.removeItem('__t'); return st; }
+  catch { const m = new Map(); return {getItem:k => m.has(k) ? m.get(k) : null, setItem:(k, v) => { m.set(k, String(v)); }, removeItem:k => { m.delete(k); }, memory:true}; }
+})();
+const PREVIEW = !!LS.memory && !window.FIREBASE_CONFIG;
+
 // ═════════════════════════ 기본 정보 ═════════════════════════
 const FB_VER = '10.12.2';
 const LS_KEY = 'mocklog-v1';
-try { localStorage.removeItem('mocklog-news'); localStorage.removeItem('mocklog-news-read'); } catch {}  // 예전 입시 뉴스 기능의 남은 기록 정리
+try { LS.removeItem('mocklog-news'); LS.removeItem('mocklog-news-read'); } catch {}  // 예전 입시 뉴스 기능의 남은 기록 정리
 const REASONS = ['개념 부족','계산 실수','문제 오독','시간 부족','찍음','기타'];
 const OFFICIAL_TYPES = ['교육청','평가원','수능'];
 const PRIVATE_TYPES = ['사설','하프'];
@@ -551,7 +558,7 @@ const mode = window.FIREBASE_CONFIG ? 'cloud' : 'local';
 const NOSLEEP_MP4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMzbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAl10cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHVbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABgG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUBzdGJsAAAAwHN0c2QAAAAAAAAAAQAAALBhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANmF2Y0MBZAAK/+EAGWdkAAqscgRewEQAAAMABAAAAwAIPEiWEYABAAZo6EOPLIv9+PgAAAAAEHBhc3AAAAABAAAAAQAAABRidHJ0AAAAAAAAC1AAAAtQAAAAGHN0dHMAAAAAAAAAAQAAAAIAAEAAAAAAFHN0c3MAAAAAAAAAAQAAAAEAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAIAAAABAAAAHHN0c3oAAAAAAAAAAAAAAAIAAALHAAAADQAAABRzdGNvAAAAAAAAAAEAAANjAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAAAIZnJlZQAAAtxtZGF0AAACrwYF//+r3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NCByMzEwOCAzMWUxOWY5IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTE2IGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMzMgbWU9dW1oIHN1Ym1lPTEwIHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MjQgY2hyb21hX21lPTEgdHJlbGxpcz0yIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS0yIHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTggYl9weXJhbWlkPTIgYl9hZGFwdD0yIGJfYmlhcz0wIGRpcmVjdD0zIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTYwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAABBliIEAAt/+99M/zLLsmiWBAAAACUGaCC2IK//+8A==';
 const fb = {};
 let user = null, data = null, charts = [];
-const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, ov:null, nf:null, colOpen:null, nq:'', nSubj:'', nSolved:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(localStorage.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
+const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, ov:null, nf:null, colOpen:null, nq:'', nSubj:'', nSolved:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(LS.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
 
 function defaultData(){
   const now = new Date();
@@ -581,7 +588,7 @@ const ansText = a => !a ? '' : a.type === 'mc' ? (CIRC[Number(a.v) - 1] || a.v) 
 const mineText = w => w.mine == null || w.mine === '' ? '' : (w.ans?.type === 'short' ? String(w.mine) : (CIRC[Number(w.mine) - 1] || String(w.mine)));
 function normalize(d){
   const base = defaultData();
-  if (!d || typeof d !== 'object') return base;
+  if (!d || typeof d !== 'object') d = base;  // 새 계정도 아래 기본값 처리를 똑같이 거치게 함
   const s = {...base.settings, ...(d.settings || {})};
   s.goals = {...base.settings.goals, ...(s.goals || {})};
   s.elective = {...base.settings.elective, ...(s.elective || {})};
@@ -709,7 +716,7 @@ async function flush(){
   if (!data) return;
   const payload = JSON.parse(JSON.stringify(data));
   if (mode === 'local'){
-    try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); setSave('이 기기에 저장됨'); }
+    try { LS.setItem(LS_KEY, JSON.stringify(payload)); setSave(PREVIEW ? '미리보기 (저장 안 됨)' : '이 기기에 저장됨'); }
     catch (err) { console.error(err); setSave('저장 실패: 저장 공간 확인', true); }
     return;
   }
@@ -728,7 +735,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 async function loadData(){
   if (mode === 'local'){
-    let raw = null; try { raw = JSON.parse(localStorage.getItem(LS_KEY)); } catch {}
+    let raw = null; try { raw = JSON.parse(LS.getItem(LS_KEY)); } catch {}
     data = normalize(raw);
     if (!raw) flush();
     return;
@@ -997,7 +1004,7 @@ function homeCard(it){
 function renderHome(){
   if (state.editHome) return renderHomeEdit();
   const wide = isWide(), L = layout().filter(it => !it.hidden);
-  const notice = mode === 'local' ? `<div class="notice">지금은 로컬 모드라 이 브라우저에만 저장돼요. config.js에 Firebase 설정을 넣으면 로그인해서 어느 기기에서나 볼 수 있어요.</div>` : '';
+  const notice = PREVIEW ? `<div class="notice">미리보기 모드: 이 화면에서는 기록이 저장되지 않아요. 실제 앱에서는 정상적으로 저장돼요.</div>` : mode === 'local' ? `<div class="notice">지금은 로컬 모드라 이 브라우저에만 저장돼요. config.js에 Firebase 설정을 넣으면 로그인해서 어느 기기에서나 볼 수 있어요.</div>` : '';
   const bar = `<div class="homebar"><button class="btn sm ghost" data-act="home-edit">카드 편집</button></div>`;
   const cards = L.map(it => { const h = homeCard(it); return h && wide ? `<div class="${it.size === 'w' ? 'w2' : ''}">${h}</div>` : h; }).join('');
   if (!cards) return notice + bar + `<section class="card"><p class="sub" style="margin:0">보이는 카드가 없어요. 카드 편집에서 켜 주세요.</p></section>`;
@@ -1469,8 +1476,8 @@ function tickTimer(){
 
 // ═════════════════════════ 풀이 시간 측정 (하프·사설) ═════════════════════════
 const sw = { examId:null, subj:null, startAt:0 };
-try { Object.assign(sw, JSON.parse(localStorage.getItem('mocklog-sw')) || {}); } catch {}
-const saveSw = () => { try { localStorage.setItem('mocklog-sw', JSON.stringify(sw)); } catch {} };
+try { Object.assign(sw, JSON.parse(LS.getItem('mocklog-sw')) || {}); } catch {}
+const saveSw = () => { try { LS.setItem('mocklog-sw', JSON.stringify(sw)); } catch {} };
 function swMs(e, k){
   const base = (e.scores?.[k]?.time || 0) * 1000;
   return sw.examId === e.id && sw.subj === k ? base + (Date.now() - sw.startAt) : base;
@@ -2007,7 +2014,7 @@ function renderNotes(){
 
 // ═════════════════════════ 시간표 ═════════════════════════
 const TT_DAYS = ['일','월','화','수','목','금','토'];
-const TT_PER = [['am','아침'],['pm','오후'],['eve','저녁']];
+const TT_PER = [['am','오전'],['pm','오후'],['eve','저녁']];
 const TT_COLORS = ['#ffd3d3','#ffe2c4','#fff0a6','#d9f2c4','#c6eee5','#cde4ff','#d9d4ff','#f2d0ff','#ffd1e6','#e4e4e4'];
 function normTT(t){
   const o = t && typeof t === 'object' ? t : {};
@@ -2021,7 +2028,8 @@ function normTT(t){
       period:['am','pm','eve'].includes(c.period) ? c.period : 'pm', color:c.color || TT_COLORS[5]})) : [],
   };
 }
-const ttPeriodOf = start => { const t = data.settings.tt; if (!start) return 'pm'; return start < t.lunch.s ? 'am' : start < t.dinner.s ? 'pm' : 'eve'; };
+// 시작 시각으로 칸 제안: 12시 전 오전, 18시 전 오후, 그 뒤 저녁 (등록할 때 직접 바꿀 수 있음)
+const ttPeriodOf = start => !start ? 'pm' : start < '12:00' ? 'am' : start < '18:00' ? 'pm' : 'eve';
 const ttTime = c => c.start && c.end ? `${c.start}–${c.end}` : (c.start || '');
 const ttWhere = c => c.place ? (c.kind === '인강' ? `인강 ${c.place}` : c.place) : (c.kind === '인강' ? '인강' : '');
 function ttCell(d, per){
@@ -2029,12 +2037,12 @@ function ttCell(d, per){
 }
 function renderTT(){
   const t = data.settings.tt, today = new Date().getDay();
-  let h = `<div class="ttbar"><button class="btn" data-act="tt-new">수업 추가</button><button class="btn ghost" data-act="tt-img">이미지로 저장</button><button class="btn ghost" data-act="tt-set" style="flex:0 0 auto">시간 설정</button></div>`;
+  let h = `<div class="ttbar"><button class="btn" data-act="tt-new">수업 추가</button><button class="btn ghost" data-act="tt-img">이미지로 저장</button></div>`;
   h += `<div class="tt" role="table" aria-label="주간 시간표"><div></div>${TT_DAYS.map((d, i) => `<div class="tt-h ${i === today ? 'today' : ''} ${i === 0 ? 'sun' : ''}" role="columnheader">${d}</div>`).join('')}`;
-  const band = (label, x) => `<div class="tt-band">${label} ${x.s}–${x.e}</div>`;
+  const band = label => `<div class="tt-band">${label}</div>`;
   TT_PER.forEach(([per, label], pi) => {
-    if (pi === 1) h += band('점심', t.lunch);
-    if (pi === 2) h += band('저녁 식사', t.dinner);
+    if (pi === 1) h += band('점심');
+    if (pi === 2) h += band('저녁');
     h += `<div class="tt-l">${label}</div>` + TT_DAYS.map((d, i) => `<div class="tt-c ${i === today ? 'today' : ''}" role="cell" aria-label="${d}요일 ${label}">${ttCell(i, per).map(c =>
       `<button class="tt-k" style="background:${c.color}" data-act="tt-edit" data-id="${c.id}" aria-label="${esc(c.subj)} ${esc(ttTime(c))} ${esc(ttWhere(c))} ${esc(c.teacher)}">
         <b>${esc(c.subj)}</b><span class="t1">${esc(c.start)}</span><span class="t2">${esc(ttTime(c))}</span>${ttWhere(c) ? `<span class="w">${esc(ttWhere(c))}</span>` : ''}${c.teacher ? `<span class="w">${esc(c.teacher)} 선생님</span>` : ''}</button>`).join('')}</div>`).join('');
@@ -2060,22 +2068,13 @@ function ttFormHtml(){
       <div class="setlabel">시간</div>
       <div class="grid2" style="margin:0"><input id="tt-start" type="time" value="${esc(f.start)}" aria-label="시작 시각"><input id="tt-end" type="time" value="${esc(f.end)}" aria-label="끝나는 시각"></div>
       <div class="setlabel">시간표 칸</div>${chipRow('ttp', 'period', TT_PER, f.period)}
-      <p class="hint" style="margin:4px 0 0">시작 시각을 넣으면 칸이 자동으로 골라져요. 필요하면 직접 바꿀 수 있어요.</p>
+      <p class="hint" style="margin:4px 0 0">시작 시각을 넣으면 칸이 자동으로 골라져요(12시 전 오전, 18시 전 오후, 그 뒤 저녁). 필요하면 직접 바꿀 수 있어요.</p>
       <div class="setlabel">색상</div>
       <div class="swatches">${TT_COLORS.map(c => `<button class="sw2 ${f.color === c ? 'on' : ''}" style="background:${c}" data-act="ttc" data-v="${c}" aria-label="색상 ${c}" aria-pressed="${f.color === c}"></button>`).join('')}</div>
     </section>
     <button class="btn" data-act="tt-save">${edit ? '저장' : '시간표에 추가'}</button>
     ${edit ? `<button class="btn danger" data-act="tt-del" style="margin-top:8px">이 수업 삭제</button>` : ''}</div>`;
 }
-function ttSetHtml(){
-  const t = state.tts;
-  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">시간 설정</div><div class="fs-t2">시간표</div></div><button class="fs-close" data-act="ov-close">닫기</button></div>
-    <section class="card"><p class="sub" style="margin:0 0 6px">점심시간과 저녁 식사 시간은 시간표에 띠로 표시되고, 수업의 시작 시각으로 아침·오후·저녁 칸을 나누는 기준이 돼요.</p>
-      <div class="setlabel">점심시간</div><div class="grid2" style="margin:0"><input id="tts-ls" type="time" value="${t.lunch.s}" aria-label="점심 시작"><input id="tts-le" type="time" value="${t.lunch.e}" aria-label="점심 끝"></div>
-      <div class="setlabel">저녁 식사 시간</div><div class="grid2" style="margin:0"><input id="tts-ds" type="time" value="${t.dinner.s}" aria-label="저녁 식사 시작"><input id="tts-de" type="time" value="${t.dinner.e}" aria-label="저녁 식사 끝"></div>
-      <button class="btn" data-act="tts-save" style="margin-top:14px">저장</button></section></div>`;
-}
-
 // ── 시간표 이미지 ──
 const TT_SIZES = {
   device:'이 기기 화면', iphone:'아이폰 세로', ipadP:'아이패드 세로', ipadL:'아이패드 가로',
@@ -2111,9 +2110,8 @@ function drawTT(W, H, wall, dark){
   const totalW = counts.reduce((a, b) => a + b, 0);
   TT_PER.forEach(([per, label], pi) => {
     if (pi > 0){
-      const x = pi === 1 ? t.lunch : t.dinner;
       g.fillStyle = C.sub; g.font = `${u * 2.2}px ${F}`; g.textAlign = 'center';
-      g.fillText(`${pi === 1 ? '점심' : '저녁 식사'} ${x.s}–${x.e}`, x0 + w0 / 2, y + gap + bandH * 0.65);
+      g.fillText(pi === 1 ? '점심' : '저녁', x0 + w0 / 2, y + gap + bandH * 0.65);
       y += bandH + gap;
     }
     const rh = rowsArea * counts[pi] / totalW;
@@ -2453,7 +2451,7 @@ function renderOv(){
   document.documentElement.classList.add('fs-on');
   const k = state.ov.kind;
   const keep = el.scrollTop;
-  el.innerHTML = k === 'quizSetup' ? quizSetupHtml(state.ov.o) : k === 'quiz' ? quizHtml() : k === 'nf' ? nfHtml() : k === 'tt' ? ttFormHtml() : k === 'tts' ? ttSetHtml() : k === 'tti' ? ttImgHtml() : pdfSetupHtml(state.ov.o);
+  el.innerHTML = k === 'quizSetup' ? quizSetupHtml(state.ov.o) : k === 'quiz' ? quizHtml() : k === 'nf' ? nfHtml() : k === 'tt' ? ttFormHtml() : k === 'tti' ? ttImgHtml() : pdfSetupHtml(state.ov.o);
   if (k === 'tti') ttPreview();
   if (k !== 'quiz') el.scrollTop = keep;
   hydrateImgs(el);
@@ -2802,7 +2800,7 @@ const ACT = {
     const w = {id:newId(), subj:W.subj, no:W.no, reason:W.reason, note:W.note, ans:{type:W.ansType, v:String(W.ans)}, cols:[...new Set([...W.cols.filter(id => !autoCols.includes(id)), ...autoCols])]};
     if (String(W.mine).trim()) w.mine = String(W.mine);
     (e.wrongs ??= []).push(w);
-    try { localStorage.setItem('mocklog-lastcols', JSON.stringify(W.cols)); } catch {}
+    try { LS.setItem('mocklog-lastcols', JSON.stringify(W.cols)); } catch {}
     Object.assign(W, {no:'', note:'', ans:'', mine:''});
     touch(); render(); toast(`${subjName(w.subj)} ${w.no}번을 오답에 추가했어요.`); $('#wr-no')?.focus({preventScroll:true});
   },
@@ -2886,15 +2884,6 @@ const ACT = {
   'tt-del': () => {
     const f = state.ttf; if (!confirm(`"${f.subj}" 수업을 시간표에서 지울까요?`)) return;
     data.settings.tt.classes = data.settings.tt.classes.filter(x => x.id !== f.id); touch(); closeOv();
-  },
-  'tt-set': () => { const t = data.settings.tt; state.tts = {lunch:{...t.lunch}, dinner:{...t.dinner}}; state.ov = {kind:'tts'}; renderOv(); },
-  'tts-save': () => {
-    const v = id => $('#' + id).value, t = data.settings.tt;
-    const L = {s:v('tts-ls'), e:v('tts-le')}, D = {s:v('tts-ds'), e:v('tts-de')};
-    if (!L.s || !L.e || !D.s || !D.e || L.e <= L.s || D.e <= D.s || D.s < L.e){ toast('시간을 다시 확인해 주세요. 점심이 저녁 식사보다 먼저여야 해요.'); return; }
-    t.lunch = L; t.dinner = D;
-    if (confirm('바뀐 시간에 맞춰 수업들의 아침·오후·저녁 칸을 다시 나눌까요?')) t.classes.forEach(c => { c.period = ttPeriodOf(c.start); });
-    touch(); closeOv();
   },
   'tt-img': () => {
     const wide = isWide(), land = window.innerWidth > window.innerHeight;
@@ -3028,9 +3017,10 @@ function makeDb(F, app){
   try { return F.initializeFirestore(app, {localCache: F.persistentLocalCache({tabManager: F.persistentSingleTabManager()})}); }
   catch (err) { console.warn('기기 저장소를 쓸 수 없어 일반 모드로 실행', err); return F.getFirestore(app); }
 }
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(err => console.warn('오프라인 준비 실패', err)));
-}
+try {
+  if (!LS.memory && 'serviceWorker' in navigator && location.protocol.startsWith('http'))
+    window.addEventListener('load', () => { try { navigator.serviceWorker.register('sw.js').catch(err => console.warn('오프라인 준비 실패', err)); } catch {} });
+} catch {}
 let pendingWrites = 0;
 const offlineNote = () => navigator.onLine ? '' : ' (오프라인)';
 window.addEventListener('online', () => { if (pendingWrites) setSave('연결됨, 올리는 중…'); else if (data) setSave('저장됨'); });
@@ -3038,7 +3028,7 @@ window.addEventListener('offline', () => { if (data) setSave('오프라인: 기�
 
 async function init(){
   loadMedia().then(() => { if (data && state.tab === 'timer') render(); });
-  if (mode === 'local'){ user = {email:'로컬 모드'}; await loadData(); await store.loadNotes(); show('app'); render(); setSave('이 기기에 저장'); return; }
+  if (mode === 'local'){ user = {email:'로컬 모드'}; await loadData(); await store.loadNotes(); show('app'); render(); setSave(PREVIEW ? '미리보기 (저장 안 됨)' : '이 기기에 저장'); return; }
   try {
     const base = `https://www.gstatic.com/firebasejs/${FB_VER}`;
     const [appM, authM, fsM] = await Promise.all([import(`${base}/firebase-app.js`), import(`${base}/firebase-auth.js`), import(`${base}/firebase-firestore.js`)]);
