@@ -385,6 +385,23 @@ input[type=range]{-webkit-appearance:auto;appearance:auto;background:none;border
 .tdrow.now .tdst{color:var(--omr)}
 .tdrow.now b::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--omr);margin-left:6px;vertical-align:2px}
 
+/* 삭제·되돌리기 */
+#undoBar{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 74px);transform:translate(-50%,160%);z-index:60;
+  display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--card);border-radius:14px;padding:10px 10px 10px 16px;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);max-width:calc(100vw - 24px);font-size:14px;font-weight:600}
+#undoBar.show{transform:translate(-50%,0)}
+#undoBar button{border:0;border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-weight:800;padding:8px 14px;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){ #undoBar{transition:transform .25s} }
+@media (min-width:700px) and (min-height:560px){ #undoBar{bottom:calc(env(safe-area-inset-bottom,0px) + 24px)} }
+.selbar .btn{white-space:nowrap;padding-left:6px;padding-right:6px;font-size:14px}
+.selbar{position:sticky;bottom:calc(64px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;padding:10px 0;background:var(--paper);z-index:3}
+@media (min-width:700px) and (min-height:560px){ .selbar{bottom:0} }
+.exam.selmode{cursor:pointer}
+.exam .ck,.wbitem .ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:var(--card);font-size:15px;font-weight:800}
+.exam.picked{box-shadow:inset 0 0 0 2px var(--omr)}
+.exam.picked .ck,.wbitem.picked .ck{background:var(--omr);border-color:var(--omr)}
+.btn.danger.fill{background:var(--danger);color:#fff;border-color:var(--danger)}
+
 /* 회차별 성적표 */
 .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
 .tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
@@ -558,7 +575,7 @@ const mode = window.FIREBASE_CONFIG ? 'cloud' : 'local';
 const NOSLEEP_MP4 = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAMzbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAl10cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAAAAAAABAAAAAAHVbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABgG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAUBzdGJsAAAAwHN0c2QAAAAAAAAAAQAAALBhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANmF2Y0MBZAAK/+EAGWdkAAqscgRewEQAAAMABAAAAwAIPEiWEYABAAZo6EOPLIv9+PgAAAAAEHBhc3AAAAABAAAAAQAAABRidHJ0AAAAAAAAC1AAAAtQAAAAGHN0dHMAAAAAAAAAAQAAAAIAAEAAAAAAFHN0c3MAAAAAAAAAAQAAAAEAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAIAAAABAAAAHHN0c3oAAAAAAAAAAAAAAAIAAALHAAAADQAAABRzdGNvAAAAAAAAAAEAAANjAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY2MC4xNi4xMDAAAAAIZnJlZQAAAtxtZGF0AAACrwYF//+r3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2NCByMzEwOCAzMWUxOWY5IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTE2IGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDM6MHgxMzMgbWU9dW1oIHN1Ym1lPTEwIHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MjQgY2hyb21hX21lPTEgdHJlbGxpcz0yIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS0yIHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTggYl9weXJhbWlkPTIgYl9hZGFwdD0yIGJfYmlhcz0wIGRpcmVjdD0zIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MSBzY2VuZWN1dD00MCBpbnRyYV9yZWZyZXNoPTAgcmNfbG9va2FoZWFkPTYwIHJjPWNyZiBtYnRyZWU9MSBjcmY9MjMuMCBxY29tcD0wLjYwIHFwbWluPTAgcXBtYXg9NjkgcXBzdGVwPTQgaXBfcmF0aW89MS40MCBhcT0xOjEuMDAAgAAAABBliIEAAt/+99M/zLLsmiWBAAAACUGaCC2IK//+8A==';
 const fb = {};
 let user = null, data = null, charts = [];
-const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, ov:null, nf:null, colOpen:null, nq:'', nSubj:'', nSolved:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(LS.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
+const state = { tab:'home', examId:null, cat:'private', fs:null, wn:null, crop:null, ov:null, nf:null, nsel:null, esel:null, colOpen:null, nq:'', nSubj:'', nSolved:'', pick:null, pickSubj:'', ser:'', editHome:false, newSer:false, wr:{subj:'ko', reason:REASONS[0], no:'', note:'', ansType:'mc', ans:'', mine:'', cols:(() => { try { return JSON.parse(LS.getItem('mocklog-lastcols')) || []; } catch { return []; } })()} };
 
 function defaultData(){
   const now = new Date();
@@ -731,7 +748,47 @@ async function flush(){
       if (err?.code !== 'permission-denied') saveTimer = setTimeout(flush, 10000);
     });
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && saveTimer) flush(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden'){ commitUndo(); if (saveTimer) flush(); } });
+
+// ═════════════════════════ 삭제와 되돌리기 ═════════════════════════
+// 지우기 직전 상태를 잠시 보관해 두고, 사진·노트는 되돌리기 시간이 지난 뒤에 실제로 지움
+let undoState = null;
+function pruneLoose(){ data.exams = data.exams.filter(e => !e.loose || (e.wrongs || []).length); }
+function withUndo(label, mutate, wrongIds=[]){
+  commitUndo();
+  const snap = JSON.stringify(data);
+  mutate(); pruneLoose();
+  if (sw.examId && !data.exams.some(e => e.id === sw.examId)){ Object.assign(sw, {examId:null, subj:null, startAt:0}); saveSw(); syncWake(); }
+  touch();
+  undoState = {snap, wrongIds, timer:setTimeout(commitUndo, 7000)};
+  let bar = $('#undoBar');
+  if (!bar){ bar = document.createElement('div'); bar.id = 'undoBar'; bar.setAttribute('role', 'status'); document.body.appendChild(bar); }
+  bar.innerHTML = `<span>${esc(label)}</span><button data-act="undo">되돌리기</button>`;
+  requestAnimationFrame(() => bar.classList.add('show'));
+}
+function commitUndo(){
+  if (!undoState) return;
+  clearTimeout(undoState.timer);
+  for (const id of undoState.wrongIds) if (notes.has(id) && !findWrong(id)) store.delNote(id);
+  undoState = null; $('#undoBar')?.classList.remove('show');
+}
+function doUndo(){
+  if (!undoState) return;
+  clearTimeout(undoState.timer);
+  data = normalize(JSON.parse(undoState.snap)); undoState = null;
+  $('#undoBar')?.classList.remove('show');
+  touch(); render(); toast('되돌렸어요.');
+}
+const wrongIdsOfExams = list => list.flatMap(e => (e.wrongs || []).map(w => w.id));
+function deleteExams(ids){
+  const del = data.exams.filter(e => ids.includes(e.id)), wids = wrongIdsOfExams(del);
+  const label = del.length === 1 ? `"${examName(del[0])}" 기록을 지웠어요.` : `시험 기록 ${del.length}개를 지웠어요.`;
+  withUndo(label, () => { data.exams = data.exams.filter(e => !ids.includes(e.id)); if (ids.includes(state.examId)) state.examId = null; }, wids);
+}
+function deleteWrongs(ids){
+  const n = ids.length;
+  withUndo(n === 1 ? '오답을 지웠어요.' : `오답 ${n}개를 지웠어요.`, () => { for (const e of data.exams) e.wrongs = (e.wrongs || []).filter(w => !ids.includes(w.id)); }, ids);
+}
 
 async function loadData(){
   if (mode === 'local'){
@@ -1044,6 +1101,9 @@ function examsHeader(){
     if (sers.length) h += `<div class="chipsrow" aria-label="시험 이름"><button class="fchip ${!state.ser?'on':''}" data-act="ser" data-id="">전체</button>${sers.map(x => `<button class="fchip ${state.ser===x.id?'on':''}" data-act="ser" data-id="${x.id}">${esc(serLabel(x))}</button>`).join('')}</div>`;
     h += `<div class="grid2" style="margin:2px 0 4px"><button class="btn ghost" data-act="add-exam" data-type="사설">사설 추가</button><button class="btn ghost" data-act="add-exam" data-type="하프">하프 추가</button></div>`;
   } else h += `<button class="btn ghost" data-act="add-exam" data-type="교육청" style="margin:2px 0 4px">공식 시험 추가</button>`;
+  h += state.esel
+    ? `<div class="selbar" style="position:static;padding:4px 0 6px"><button class="btn ghost sm" data-act="esel-cancel">취소</button><button class="btn ghost sm" data-act="esel-all">전체 선택</button><button class="btn danger fill sm" data-act="esel-del" ${state.esel.size ? '' : 'disabled'}>${state.esel.size}개 삭제</button></div>`
+    : `<button class="linkbtn" data-act="esel-start" style="margin:0 0 2px">선택해서 삭제</button>`;
   return h;
 }
 function examItem(e, inSplit){
@@ -1054,11 +1114,12 @@ function examItem(e, inSplit){
   if (off) line = filled ? subs.map(s => `<span>${esc(s.name)} <b>${e.scores?.[s.key]?.grade ?? '–'}</b></span>`).join('') : '<span>아직 기록 없음</span>';
   else line = subs.map(s => { const t = minText(e.scores?.[s.key]?.time); return `<span>${esc(s.name)} <b>${scoreText(e, s)}</b>${t ? ` (${t})` : ''}</span>`; }).join('') + (miss ? `<span class="missing">${miss}</span>` : '');
   const st = off ? (filled ? `기록 완료${nW ? `, 오답 ${nW}` : ''}` : '아직 기록 없음') : (miss ? `<span class="missing">${miss}</span>` : `기록 완료${nW ? `, 오답 ${nW}` : ''}`);
-  return `<section class="card exam ${active ? 'active' : ''}" data-act="open" data-id="${e.id}" ${active ? 'aria-current="true"' : ''}><div class="grow">
+  const sel = state.esel, picked = sel?.has(e.id);
+  return `<section class="card exam ${active && !sel ? 'active' : ''} ${sel ? 'selmode' : ''} ${picked ? 'picked' : ''}" data-act="${sel ? 'esel-tog' : 'open'}" data-id="${e.id}" ${active && !sel ? 'aria-current="true"' : ''} ${sel ? `aria-pressed="${picked}"` : ''}>${sel ? `<span class="ck">${picked ? '✓' : ''}</span>` : ''}<div class="grow">
     <div class="row"><span class="tag ${isHalf(e) ? 'plain' : ''}">${esc(e.type)}</span><span class="sub">${when}</span></div>
     <b class="ename" data-id="${e.id}" style="display:block;margin-top:4px;font-size:17px">${esc(examName(e))}</b>
     <div class="gline">${line}${nW ? `<span>오답 <b>${nW}</b></span>` : ''}</div>
-    ${inSplit ? `<div class="st">${st}</div>` : ''}</div>${inSplit ? '' : '<span class="chev">›</span>'}</section>`;
+    ${inSplit ? `<div class="st">${st}</div>` : ''}</div>${inSplit || sel ? '' : '<span class="chev">›</span>'}</section>`;
 }
 const emptyCat = () => `<section class="card"><p class="sub" style="margin:0">${state.cat === 'private'
   ? (state.ser ? '이 이름으로 기록한 시험이 없어요.' : '사설·하프 시험이 아직 없어요. 위 버튼으로 추가해 보세요.') : '공식 시험이 없어요. 위 버튼으로 추가해 보세요.'}</p></section>`;
@@ -1231,6 +1292,7 @@ function renderSettings(){
     <div class="grid2" style="margin:0 0 6px"><button class="btn ghost" data-act="export-json">JSON 내보내기</button><button class="btn ghost" data-act="export-csv">CSV 내보내기</button></div>
     <label class="btn ghost" style="display:block;text-align:center">JSON 불러오기<input id="importFile" type="file" accept="application/json,.json" hidden></label></section>`;
 
+  h += `<section class="card"><h2>초기화</h2><p class="sub" style="margin:-6px 0 12px">시험 기록, 오답, 시간표, 모음집 중 골라서 한 번에 비울 수 있어요.</p><button class="btn danger" data-act="reset-open">기록 초기화</button></section>`;
   h += `<section class="card"><h2>계정</h2>`;
   h += mode === 'cloud'
     ? `<p class="sub" style="margin:-6px 0 12px">${esc(user.email)}(으)로 로그인됨</p><button class="btn danger" data-act="logout">로그아웃</button>`
@@ -1690,13 +1752,14 @@ function sheetHtml({e, w}){
       ${n.imgs.length ? `<div class="imgs">${n.imgs.map(im => `<figure class="shot ${im.kind === 'fig' ? 'fig' : 'prob'}"><img data-img="${im.id}" data-act="img-zoom" alt="${im.kind === 'fig' ? '그림' : '문항'} 사진">
         <figcaption>${im.kind === 'fig' ? '그림' : '문항'}</figcaption><button class="x" data-act="img-del" data-id="${im.id}" aria-label="사진 삭제">×</button></figure>`).join('')}</div>` : ''}
       <label class="btn ${n.imgs.length ? 'ghost' : ''}" style="display:block;text-align:center">사진 찍기 또는 고르기<input id="shotFile" type="file" accept="image/*" hidden></label>
-      <p class="hint" style="margin:8px 0 0">사진을 고르면 네 모서리를 맞춰 반듯하게 펴고, 스캔한 것처럼 정리해서 저장해요. 그래프나 자료 그림은 '그림'으로 따로 저장해 두면 좋아요.</p></section>
+      <p class="hint" style="margin:8px 0 0">사진을 고르면 필요한 부분만 잘라 스캔한 것처럼 정리해서 저장해요. 그래프나 자료 그림은 '그림'으로 따로 저장해 두면 좋아요.</p></section>
     <section class="card"><h2>정답과 모음집</h2>${ansBlock('sheet', w.ans?.type || w.ansType || 'mc', w.ans?.v ?? '', w.mine ?? '')}${colChips('sheet', w.cols || [])}</section>
     <section class="card"><h2>틀린 이유와 메모</h2>
       <div class="grid2" style="margin:0 0 8px"><select data-bind="wrong" data-k="reason" aria-label="틀린 이유">${REASONS.map(r => `<option ${r === w.reason ? 'selected' : ''}>${r}</option>`).join('')}</select>
         <input data-bind="wrong" data-k="no" value="${esc(w.no)}" inputmode="numeric" placeholder="문항 번호" aria-label="문항 번호"></div>
       ${e.loose && e.type === '교재' ? `<input data-bind="wrong" data-k="detail" value="${esc(w.detail || '')}" placeholder="쪽·단원 (예: 23쪽, 생태계)" aria-label="쪽·단원" style="margin-bottom:8px">` : ''}
-      <textarea data-bind="wrong" data-k="note" placeholder="무엇을 놓쳤는지, 다음엔 어떻게 풀지">${esc(w.note)}</textarea></section></div>`;
+      <textarea data-bind="wrong" data-k="note" placeholder="무엇을 놓쳤는지, 다음엔 어떻게 풀지">${esc(w.note)}</textarea></section>
+    <button class="btn danger" data-act="wn-del">이 오답 삭제</button></div>`;
 }
 function renderSheet(){
   let el = $('#sheet');
@@ -1956,12 +2019,24 @@ function colSummary(id){
   return {n:list.length, parts:Object.entries(by).sort((a,b) => b[1] - a[1]).map(([k, n]) => `${subjName(k)} ${n}`).join(', ')};
 }
 function wrongItem(e, w, colId){
+  if (state.nsel){
+    const on = state.nsel.has(w.id), n = notes.get(w.id), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
+    return `<button class="wbitem ${on ? 'picked' : ''}" data-act="nsel-tog" data-id="${w.id}" aria-pressed="${on}" style="align-items:center"><span class="ck">${on ? '✓' : ''}</span>
+      ${img ? `<img class="thumb" data-img="${img.id}" alt="">` : `<span class="thumb ph">${esc(subjName(w.subj))}</span>`}
+      <span class="grow"><b>${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="sub">${esc(w.reason)}</span><span class="sub d" style="display:block">${esc(srcName(e, w))}</span></span></button>`;
+  }
   const n = notes.get(w.id), img = n?.imgs.find(i => i.kind === 'prob') || n?.imgs[0];
   return `<div class="wbitem" style="cursor:default"><button class="wopen" data-act="wn-open" data-id="${w.id}" style="display:flex;gap:10px;align-items:flex-start">
       ${img ? `<img class="thumb" data-img="${img.id}" alt="">` : `<span class="thumb ph">${esc(subjName(w.subj))}</span>`}
       <span class="grow"><span><b>${esc(subjName(w.subj))} ${esc(w.no || '?')}번</b> <span class="tag plain">${esc(w.reason)}</span>${w.ans ? `<span class="anschip">정답 ${esc(ansText(w.ans))}</span>` : `<span class="anschip miss">정답 미입력</span>`}</span>
       <span class="sub d">${esc(srcName(e, w))}${e.date ? `, ${fmtDate(e.date)}` : ''}${w.quiz?.length ? `, 퀴즈 ${w.quiz.length}회 중 정답 ${w.quiz.filter(q => q.ok).length}회` : ''}${isSolved(w) ? '<span class="solvedtag">해결</span>' : ''}</span>${w.note ? `<span class="snip">${esc(w.note)}</span>` : ''}</span></button>
     ${colId !== 'all' ? `<button class="btn sm ghost" data-act="col-out" data-id="${w.id}" style="flex:none">빼기</button>` : ''}</div>`;
+}
+function visibleWrongIds(){
+  const id = state.colOpen || 'all', q = state.nq.trim().toLowerCase();
+  let list = allWrongs().filter(({w}) => inCol(w, id) && (!state.nSubj || w.subj === state.nSubj) && (!state.nSolved || (state.nSolved === 'ok') === isSolved(w)));
+  if (q) list = list.filter(({e, w}) => [w.note, w.reason, examName(e), `${w.no}번`, subjName(w.subj), ansText(w.ans)].join(' ').toLowerCase().includes(q));
+  return list.map(({w}) => w.id);
 }
 function colListHtml(){
   const id = state.colOpen || 'all', q = state.nq.trim().toLowerCase();
@@ -1986,12 +2061,13 @@ function colView(wide){
   return `${wide ? '' : `<button class="back" data-act="col-back">‹ 모음집 목록</button>`}
     <section class="card"><div class="colhead"><h2>${esc(colName(id))}</h2>
       ${all ? '' : `<button class="btn sm ghost" data-act="col-pick">문항 담기</button><button class="btn sm ghost" data-act="col-rename">이름 바꾸기</button><button class="btn sm danger" data-act="col-del">삭제</button>`}</div>
-      <button class="btn ghost" data-act="nf-open" style="margin:0 0 8px">오답 추가</button>
-      <div class="grid2" style="margin:0 0 10px"><button class="btn" data-act="quiz-setup">퀴즈 시작</button><button class="btn ghost" data-act="pdf-setup">PDF로 출력</button></div>
+      ${state.nsel ? '' : `<div class="grid2" style="margin:0 0 8px"><button class="btn ghost" data-act="nf-open">오답 추가</button><button class="btn ghost" data-act="nsel-start">선택해서 삭제</button></div>`}
+      ${state.nsel ? `<p class="sub" style="margin:0 0 8px">지울 오답을 골라 주세요. 붙어 있는 사진도 함께 지워져요.</p>` : `<div class="grid2" style="margin:0 0 10px"><button class="btn" data-act="quiz-setup">퀴즈 시작</button><button class="btn ghost" data-act="pdf-setup">PDF로 출력</button></div>`}
       <input id="n-q" type="search" enterkeyhint="search" placeholder="메모, 시험 이름, 번호, 정답 검색" value="${esc(state.nq)}" autocomplete="off" aria-label="검색" style="margin-bottom:8px">
       <div class="chipsrow">${[['','전체'],['un','미해결'],['ok','해결']].map(([v, l]) => `<button class="fchip ${state.nSolved === v ? 'on' : ''}" data-act="n-solved" data-v="${v}">${l}</button>`).join('')}</div>
       ${used.length > 1 ? `<div class="chipsrow"><button class="fchip ${!state.nSubj ? 'on' : ''}" data-act="n-subj" data-s="">전체 과목</button>${used.map(s => `<button class="fchip ${state.nSubj === s.key ? 'on' : ''}" data-act="n-subj" data-s="${s.key}">${esc(s.name)}</button>`).join('')}</div>` : ''}
-      <div id="n-list">${colListHtml()}</div></section>`;
+      <div id="n-list">${colListHtml()}</div>
+      ${state.nsel ? `<div class="selbar"><button class="btn ghost" data-act="nsel-cancel">취소</button><button class="btn ghost" data-act="nsel-all">전체 선택</button><button class="btn danger fill" data-act="nsel-del" ${state.nsel.size ? '' : 'disabled'}>${state.nsel.size}개 삭제</button></div>` : ''}</section>`;
 }
 function pickView(){
   const id = state.colOpen, sel = state.pick;
@@ -2168,6 +2244,23 @@ async function ttPreview(){
   if (im.src) URL.revokeObjectURL(im.src);
   im.src = URL.createObjectURL(r.blob);
   const s = $('#ttSizeTxt'); if (s) s.textContent = `${r.W} × ${r.H} 픽셀`;
+}
+
+function resetHtml(){
+  const o = state.ov.o, nEx = data.exams.filter(e => !e.loose).length, nW = wrongIdsOfExams(data.exams.filter(e => !e.loose)).length;
+  const nL = wrongIdsOfExams(data.exams.filter(e => e.loose)).length, nT = data.settings.tt.classes.length, nC = data.settings.collections.filter(c => !c.auto).length;
+  const item = (k, title, desc) => `<button class="pickrow ${o[k] ? 'on' : ''}" data-act="rs" data-k="${k}" aria-pressed="${o[k]}"><span class="ck">${o[k] ? '✓' : ''}</span><span class="grow"><b>${title}</b><div class="sub">${desc}</div></span></button>`;
+  const any = o.exams || o.loose || o.tt || o.cols;
+  return `<div class="sh-in"><div class="sh-top"><div><div class="fs-t1">기록 초기화</div><div class="fs-t2">설정</div></div><button class="fs-close" data-act="ov-close">닫기</button></div>
+    <section class="card">
+      ${item('exams', '시험 기록', `공식·사설·하프 시험 ${nEx}개와 거기 딸린 오답 ${nW}개, 사진, 풀이 시간, 회고. 공식 시험 기본 회차는 빈 상태로 다시 만들어져요.`)}
+      ${item('loose', '오답노트에서 추가한 오답', `교재 등 오답 ${nL}개와 사진`)}
+      ${item('tt', '시간표', `수업 ${nT}개`)}
+      ${item('cols', '모음집', `직접 만든 모음집 ${nC}개 (통합사회·통합과학 기본 모음집은 남아요. 오답은 지워지지 않아요.)`)}
+      <p class="sub" style="margin:14px 0 6px">목표 등급, 과목 구성, 사설·하프 시험 이름 같은 설정은 그대로 남아요. 확인을 위해 아래 칸에 <b>초기화</b>라고 입력해 주세요.</p>
+      <input id="rs-confirm" placeholder="초기화" autocomplete="off" aria-label="확인 문구">
+      <button class="btn danger fill" data-act="reset-go" style="margin-top:10px" ${any ? '' : 'disabled'}>선택한 기록 초기화</button>
+      <p class="hint" style="margin:8px 0 0">초기화한 뒤 몇 초 동안은 되돌릴 수 있어요.</p></section></div>`;
 }
 
 // ═════════════════════════ 오답노트에서 바로 추가 ═════════════════════════
@@ -2451,6 +2544,7 @@ function renderOv(){
   document.documentElement.classList.add('fs-on');
   const k = state.ov.kind;
   const keep = el.scrollTop;
+  if (k === 'reset'){ el.innerHTML = resetHtml(); return; }
   el.innerHTML = k === 'quizSetup' ? quizSetupHtml(state.ov.o) : k === 'quiz' ? quizHtml() : k === 'nf' ? nfHtml() : k === 'tt' ? ttFormHtml() : k === 'tti' ? ttImgHtml() : pdfSetupHtml(state.ov.o);
   if (k === 'tti') ttPreview();
   if (k !== 'quiz') el.scrollTop = keep;
@@ -2719,7 +2813,7 @@ const ACT = {
     if (sec == null && e.scores[k].laps?.length && confirm('문항별 기록도 함께 지울까요?')) e.scores[k].laps = [];
     touch(); syncWake(); render();
   },
-  tab: t => { if (t.dataset.tab === 'notes' && state.tab === 'notes'){ state.colOpen = null; state.pick = null; } go({tab:t.dataset.tab, examId:null, editHome:false}); },
+  tab: t => { state.esel = null; state.nsel = null; if (t.dataset.tab === 'notes' && state.tab === 'notes'){ state.colOpen = null; state.pick = null; } go({tab:t.dataset.tab, examId:null, editHome:false}); },
   'home-edit': () => go({editHome:true}),
   'home-done': () => go({editHome:false}),
   'lay-move': t => {
@@ -2739,7 +2833,7 @@ const ACT = {
     data.settings.layout[devKey()] = defaultLayout(devKey()); touch(); render();
   },
   open: t => { const e = data.exams.find(x => x.id === t.dataset.id); state.reveal = true; go({tab:'exams', examId:t.dataset.id, cat: e ? catOf(e) : state.cat}); },
-  cat: t => go({tab:'exams', cat:t.dataset.cat, examId:null}),
+  cat: t => go({tab:'exams', cat:t.dataset.cat, examId:null, esel:null}),
   ser: t => go({ser:t.dataset.id, examId:null}),
   'add-series': () => {
     const e = cur(), name = $('#newSerName')?.value || '';
@@ -2782,9 +2876,7 @@ const ACT = {
   },
   'del-exam': () => {
     const e = cur(); if (!e || !confirm(`"${examName(e)}"의 성적과 오답 기록을 모두 지울까요?`)) return;
-    if (sw.examId === e.id){ Object.assign(sw, {examId:null, subj:null, startAt:0}); saveSw(); syncWake(); }
-    for (const w of e.wrongs || []) if (notes.has(w.id)) store.delNote(w.id);
-    data.exams = data.exams.filter(x => x.id !== e.id); touch(); go({examId:null});
+    deleteExams([e.id]); go({examId:null});
   },
   'add-wrong': () => {
     const e = cur(); if (!e) return; const W = state.wr;
@@ -2833,8 +2925,8 @@ const ACT = {
     else { const f = findWrong(state.wn?.wrongId); if (f){ f.w.cols = [...(f.w.cols || []), c.id]; touch(); } renderSheet(); }
   },
   'col-new': () => { const c = newCollection(); if (c){ state.colOpen = c.id; state.nq = ''; state.nSubj = ''; render(); } },
-  'col-open': t => { state.colOpen = t.dataset.id; state.nq = ''; state.nSubj = ''; state.pick = null; render(); window.scrollTo(0, 0); },
-  'col-back': () => { state.colOpen = null; state.pick = null; render(); window.scrollTo(0, 0); },
+  'col-open': t => { state.colOpen = t.dataset.id; state.nq = ''; state.nSubj = ''; state.pick = null; state.nsel = null; render(); window.scrollTo(0, 0); },
+  'col-back': () => { state.colOpen = null; state.pick = null; state.nsel = null; render(); window.scrollTo(0, 0); },
   'col-rename': () => {
     const c = data.settings.collections.find(x => x.id === state.colOpen); if (!c) return;
     const v = prompt('모음집 이름', c.name); if (!v || !v.trim()) return; c.name = v.trim(); touch(); render();
@@ -2921,9 +3013,60 @@ const ACT = {
   },
   'pdf-dl': () => { const o = state.ov.o; if (o.blob) downloadBlob(o.blob, o.fname); },
   'del-wrong': t => {
-    const e = cur(), id = t.dataset.id;
-    if (hasNote(id) && !confirm('이 오답에 붙인 사진도 함께 지워져요. 지울까요?')) return;
-    e.wrongs = e.wrongs.filter(w => w.id !== id); store.delNote(id); touch(); render();
+    const id = t.dataset.id;
+    if (!confirm(hasNote(id) ? '이 오답과 붙어 있는 사진을 지울까요?' : '이 오답을 지울까요?')) return;
+    deleteWrongs([id]); render();
+  },
+  'undo': () => doUndo(),
+  'wn-del': () => {
+    const id = state.wn?.wrongId; if (!id) return;
+    if (!confirm(hasNote(id) ? '이 오답과 붙어 있는 사진을 지울까요?' : '이 오답을 지울까요?')) return;
+    flushNote(); state.wn = null; state.crop = null; renderSheet(); deleteWrongs([id]); render();
+  },
+  'nsel-start': () => { state.nsel = new Set(); state.pick = null; render(); },
+  'nsel-tog': t => { const s2 = state.nsel, id = t.dataset.id; s2.has(id) ? s2.delete(id) : s2.add(id); render(); },
+  'nsel-all': () => {
+    const ids = visibleWrongIds(); const all = ids.every(id => state.nsel.has(id));
+    ids.forEach(id => all ? state.nsel.delete(id) : state.nsel.add(id)); render();
+  },
+  'nsel-cancel': () => { state.nsel = null; render(); },
+  'nsel-del': () => {
+    const ids = [...state.nsel]; if (!ids.length) return;
+    const withImg = ids.filter(hasNote).length;
+    if (!confirm(`오답 ${ids.length}개를 지울까요?${withImg ? ` 그중 ${withImg}개에 붙은 사진도 함께 지워져요.` : ''}`)) return;
+    state.nsel = null; deleteWrongs(ids); render();
+  },
+  'esel-start': () => { state.esel = new Set(); render(); },
+  'esel-tog': t => { const s2 = state.esel, id = t.dataset.id; s2.has(id) ? s2.delete(id) : s2.add(id); render(); },
+  'esel-all': () => { const ids = catExams().map(e => e.id), all = ids.every(id => state.esel.has(id)); ids.forEach(id => all ? state.esel.delete(id) : state.esel.add(id)); render(); },
+  'esel-cancel': () => { state.esel = null; render(); },
+  'esel-del': () => {
+    const ids = [...state.esel]; if (!ids.length) return;
+    const nW = wrongIdsOfExams(data.exams.filter(e => ids.includes(e.id))).length;
+    if (!confirm(`시험 기록 ${ids.length}개를 지울까요?${nW ? ` 딸린 오답 ${nW}개와 사진도 함께 지워져요.` : ''}`)) return;
+    state.esel = null; deleteExams(ids); render();
+  },
+  'reset-open': () => { state.ov = {kind:'reset', o:{exams:false, loose:false, tt:false, cols:false}}; renderOv(); },
+  'rs': t => { const o = state.ov.o; o[t.dataset.k] = !o[t.dataset.k]; renderOv(); },
+  'reset-go': () => {
+    const o = state.ov.o;
+    if (($('#rs-confirm')?.value || '').trim() !== '초기화'){ toast('확인 칸에 "초기화"라고 입력해 주세요.'); $('#rs-confirm')?.focus(); return; }
+    const delExams = data.exams.filter(e => (o.exams && !e.loose) || (o.loose && e.loose));
+    const wids = wrongIdsOfExams(delExams);
+    const parts = [o.exams && '시험 기록', o.loose && '오답노트 전용 오답', o.tt && '시간표', o.cols && '모음집'].filter(Boolean);
+    closeOv();
+    withUndo(`${parts.join(', ')}을(를) 초기화했어요.`, () => {
+      if (o.exams || o.loose) data.exams = data.exams.filter(e => !delExams.includes(e));
+      if (o.exams) data.exams.push(...defaultData().exams);
+      if (o.tt) data.settings.tt = normTT(null);
+      if (o.cols){
+        const keep = new Set(data.settings.collections.filter(c => c.auto).map(c => c.id));
+        data.settings.collections = data.settings.collections.filter(c => keep.has(c.id));
+        for (const e of data.exams) for (const w of e.wrongs || []) w.cols = (w.cols || []).filter(id => keep.has(id));
+      }
+      state.examId = null; state.colOpen = null;
+    }, wids);
+    render();
   },
   'wn-open': t => { state.wn = {wrongId:t.dataset.id}; state.crop = null; renderSheet(); $('#sheet')?.scrollTo(0, 0); },
   'wn-close': () => { const f = findWrong(state.wn?.wrongId); if (f && !f.w.ans && !confirm('정답이 아직 없어요. 그대로 닫을까요?')) return; closeSheet(); },
